@@ -71,6 +71,9 @@ export interface ServiceProviderMap {
 }
 
 export interface User {
+  provider: string;
+  type: string | null;
+  image: string;
   customer: any;
   id: number;
   auth0Id: string;

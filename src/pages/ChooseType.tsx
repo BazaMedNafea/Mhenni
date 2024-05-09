@@ -1,28 +1,57 @@
-// In ChooseType.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle, faStore } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useGetMyUser, useUpdateUserType } from "@/api/MyUserApi";
 
 type CardType = "customer" | "provider" | null;
 
 const ChooseType = () => {
   const [selectedCard, setSelectedCard] = useState<CardType>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useAuth0();
+  const { currentUser } = useGetMyUser();
+  const { updateUserType } = useUpdateUserType();
+
+  useEffect(() => {
+    console.log("Current user:", currentUser);
+    if (currentUser) {
+      if (currentUser.customer || currentUser.provider) {
+        navigate("/");
+      } else {
+        setIsLoading(false);
+      }
+    }
+  }, [currentUser, navigate]);
 
   const handleCardClick = (card: CardType) => {
     setSelectedCard(card);
   };
 
-  const handleNextClick = () => {
-    if (selectedCard && !isAnimating) {
-      setIsAnimating(true);
-      setTimeout(() => {
-        navigate("/complete-registration");
-      }, 500); // Delay to allow for the transition effect
+  const handleNextClick = async () => {
+    if (selectedCard && !isAnimating && !isLoading) {
+      setIsLoading(true);
+      try {
+        const auth0Id = user?.sub ?? "";
+        const type = selectedCard === "customer" ? "Customer" : "Provider";
+        await updateUserType({ auth0Id, type });
+        setIsAnimating(true);
+        setTimeout(() => {
+          navigate("/complete-registration");
+        }, 500);
+      } catch (error) {
+        console.error("Error updating user type:", error);
+        setIsLoading(false);
+      }
     }
   };
+
+  if (isLoading || !currentUser) {
+    return <div></div>;
+  }
 
   return (
     <div
@@ -36,7 +65,9 @@ const ChooseType = () => {
       <div className='flex justify-center mb-8'>
         <div
           className={`card bg-white rounded-lg shadow-md px-8 py-6 mx-4 cursor-pointer transform transition-transform duration-300 ${
-            selectedCard === "customer" ? "scale-105" : ""
+            selectedCard === "customer"
+              ? "scale-105 border-2 border-yellow-500"
+              : ""
           }`}
           onClick={() => handleCardClick("customer")}
         >
@@ -51,7 +82,9 @@ const ChooseType = () => {
         </div>
         <div
           className={`card bg-white rounded-lg shadow-md px-8 py-6 mx-4 cursor-pointer transform transition-transform duration-300 ${
-            selectedCard === "provider" ? "scale-105" : ""
+            selectedCard === "provider"
+              ? "scale-105 border-2 border-yellow-500"
+              : ""
           }`}
           onClick={() => handleCardClick("provider")}
         >
@@ -70,9 +103,37 @@ const ChooseType = () => {
           selectedCard ? "" : "opacity-50 cursor-not-allowed"
         }`}
         onClick={handleNextClick}
-        disabled={!selectedCard}
+        disabled={!selectedCard || isLoading}
       >
-        Next
+        {isLoading ? (
+          <div className='flex items-center justify-center'>
+            <span className='animate-spin h-5 w-5 mr-2'>
+              <svg
+                className='h-5 w-5 text-white'
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+              >
+                <circle
+                  className='opacity-25'
+                  cx='12'
+                  cy='12'
+                  r='10'
+                  stroke='currentColor'
+                  strokeWidth='4'
+                ></circle>
+                <path
+                  className='opacity-75'
+                  fill='currentColor'
+                  d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                ></path>
+              </svg>
+            </span>
+            <span>Loading...</span>
+          </div>
+        ) : (
+          "Next"
+        )}
       </button>
     </div>
   );

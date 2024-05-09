@@ -47,7 +47,7 @@ type CreateUserRequest = {
   auth0Id: string;
   email: string;
   image: string;
-  type: string; // Add type field
+  type?: string | null;
 };
 
 export const useCreateMyUser = () => {
@@ -164,4 +164,51 @@ export const useUpdateMyUser = () => {
   }
 
   return { updateUser, isLoading };
+};
+
+export const checkUserType = (currentUser: User | undefined): boolean => {
+  if (!currentUser) {
+    return false; // User data not available
+  }
+
+  return currentUser.type !== null && currentUser.type !== undefined;
+};
+
+type UpdateUserTypeRequest = {
+  auth0Id: string;
+  type: "Customer" | "Provider";
+};
+
+export const useUpdateUserType = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const updateUserTypeRequest = async ({
+    auth0Id,
+    type,
+  }: UpdateUserTypeRequest) => {
+    const accessToken = await getAccessTokenSilently();
+
+    const response = await fetch(`${API_BASE_URL}api/my/user/type`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ auth0Id, type }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user type");
+    }
+
+    return response.json();
+  };
+
+  const {
+    mutateAsync: updateUserType,
+    isLoading,
+    error,
+  } = useMutation(updateUserTypeRequest);
+
+  return { updateUserType, isLoading, error };
 };

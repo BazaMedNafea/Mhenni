@@ -1,13 +1,11 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-
-import Layout from "./layouts/layout";
-
-import ProtectedRoute from "./auth/ProtectedRoute";
-import HomePage from "./pages/HomePage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
+import Layout from "./layouts/layout";
+import CustomerProfilePage from "./pages/UserProfilePage";
+import HomePage from "./pages/HomePage";
+import ProtectedRoute from "./auth/ProtectedRoute";
 import ChooseType from "./pages/ChooseType";
-import UserForm from "./pages/UserForm";
-import UserProfilePage from "./pages/UserProfilePage";
+import CompleteRegistration from "./pages/CompleteRegistration";
 
 const AppRoutes = () => {
   return (
@@ -23,13 +21,13 @@ const AppRoutes = () => {
 
       <Route path='/auth-callback' element={<AuthCallbackPage />} />
       <Route path='/choose-type' element={<ChooseType />} />
-      <Route path='/complete-registration' element={<UserForm />} />
+      <Route path='/complete-registration' element={<CompleteRegistration />} />
       <Route element={<ProtectedRoute />}>
         <Route
-          path='/user-profile'
+          path='/customer-profile'
           element={
             <Layout>
-              <UserProfilePage />
+              <CustomerProfilePage />
             </Layout>
           }
         />

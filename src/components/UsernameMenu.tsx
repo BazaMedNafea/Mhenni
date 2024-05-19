@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0, LogoutOptions } from "@auth0/auth0-react"; // Import LogoutOptions
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
@@ -18,6 +18,10 @@ const UsernameMenu = () => {
 
   const isProvider = currentUser?.type === UserType.Provider;
   const isCustomer = currentUser?.type === UserType.Customer;
+
+  const handleLogout = () => {
+    logout({ returnTo: window.location.origin } as LogoutOptions); // Cast options to LogoutOptions
+  };
 
   return (
     <DropdownMenu>
@@ -64,7 +68,7 @@ const UsernameMenu = () => {
         <Separator />
         <DropdownMenuItem>
           <Button
-            onClick={() => logout()}
+            onClick={handleLogout}
             className='flex flex-1 font-bold bg-yellow-500'
           >
             Log Out

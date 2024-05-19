@@ -1,37 +1,51 @@
-// This is your TypeScript code based on the Prisma schema
+import { ReactNode } from "react";
+
+export interface User {
+  auth0Id?: string;
+  email: string;
+  firstName?: string;
+  address?: Address;
+  lastName?: string;
+  mobile?: string;
+  image?: string;
+  type?: UserType | null;
+  admin?: Admin | null;
+  customer?: Customer | null;
+  provider?: Provider | null;
+}
 export interface categoriestype {
   name: string;
   description: string;
   image: string;
 }
+
 export interface Provider {
-  id: number;
-  auth0Id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  mobile: string;
-  is_individual: boolean;
-  is_registered_office: boolean;
-  office_address?: string;
-  zip: string;
-  description?: string;
+  id: string;
+  userId: string;
+  isIndividual?: string | null;
+  isRegistredOffice?: string | null;
+  zip?: string | null;
+  description?: string | null;
+  providerRatings?: Rating | null;
+  services: ServiceProviderMap[];
+  addresses: Address[];
+  user: User;
 }
 
-export interface ProviderRating {
-  provider_id: number;
+export interface Rating {
+  provider_id: string;
   avg_punc_rating: number;
   avg_prof_rating: number;
   avg_eti_rating: number;
   avg_comm_rating: number;
   avg_price_rating: number;
   avg_overall_rating: number;
-  last_updated_on: string; // Assuming this is a string representing date/time
+  last_updated_on: Date;
+  provider: Provider;
 }
 
-export interface ProviderReviewLog {
+export interface ReviewLog {
   id: number;
-  service_appointment?: ServiceAppointment;
   service_appointment_id: number;
   punctuality_rating: number;
   proficiency_rating: number;
@@ -39,11 +53,12 @@ export interface ProviderReviewLog {
   communication_rating: number;
   price_rating: number;
   overall_rating: number;
-  review?: string;
-  review_date: string; // Assuming this is a string representing date/time
+  review?: string | null;
+  review_date: Date;
+  service_appointment: Appointment;
 }
 
-export interface ServiceCategory {
+export interface Category {
   id: number;
   category_name: string;
   image: string;
@@ -51,86 +66,134 @@ export interface ServiceCategory {
 }
 
 export interface Service {
+  estimatedDeliveryTime: ReactNode;
   id: number;
   service_name: string;
   service_category_id: number;
-  service_category: ServiceCategory;
+  service_category: Category;
   service_providers: ServiceProviderMap[];
+  Request: Request[];
 }
 
 export interface ServiceProviderMap {
   id: number;
   service_id: number;
-  provider_id: number;
+  provider_id: string;
   billing_rate_per_hour: number;
   experience_in_months: number;
-  service_offering_desc?: string;
-  service: Service;
+  service_offering_desc?: string | null;
+  service_delivery_offer: DeliveryOffer | null;
   provider: Provider;
-  service_delivery_offer?: ServiceDeliveryOffer;
+  service: Service;
 }
 
-export interface User {
-  provider: string;
-  type: string | null;
-  image: string;
-  customer: any;
-  id: number;
-  auth0Id: string;
-  firstName: string;
-  second_name?: string;
-  lastName: string;
-  email: string;
-  mobile: string;
+export interface Customer {
+  id: string;
+  userId: string;
+  user: User;
+  requests: Request[];
   addresses: Address[];
-  service_request: ServiceRequest[];
 }
 
 export interface Address {
   id: number;
-  customer_id: number;
   street: string;
   city: string;
   wilaya: string;
   zip: string;
-  service_request: ServiceRequest[];
+  customerId?: string | null;
+  providerId?: string | null;
+  requests: Request[];
+  customer?: Customer | null;
+  provider?: Provider | null;
 }
 
-export interface ServiceDeliveryOffer {
+export interface DeliveryOffer {
   id: number;
   service_request_id: number;
   service_provider_map_id: number;
-  discount_in_percentage?: number;
-  is_offer_accepted?: boolean;
-  service_request: ServiceRequest;
+  discount_in_percentage?: number | null;
+  is_offer_accepted?: boolean | null;
+  service_appointment: Appointment[];
   service_provider_map: ServiceProviderMap;
-  service_appointment: ServiceAppointment[];
+  service_request: Request;
 }
 
-export interface ServiceRequest {
+export interface Request {
+  customerName: string;
+  customerAddress: string;
+  serviceName: string;
+  requestDescription: string;
+  expectedStartTime: string;
   id: number;
-  customer_id: number;
-  address_id: number;
+  customer_id: string;
   service_id: number;
-  requirement_desc?: string;
-  expected_start_time: string; // Assuming this is a string representing date/time
-  address: Address;
-  service_delivery_offer: ServiceDeliveryOffer[];
+  requirement_desc?: string | null;
+  expected_start_time: string;
+  service_delivery_offer: DeliveryOffer[];
+  // Add the Address property here
+  Address?: Address | null;
+  custom_address_street?: string | null;
+  custom_address_city?: string | null;
+  custom_address_wilaya?: string | null;
+  custom_address_zip?: string | null;
+  customer: Customer;
+  service: Service;
+  addressId?: number | null;
 }
 
-export interface ServiceAppointment {
+export interface Appointment {
   id: number;
   service_delivery_offer_id: number;
-  service_deliver_on: string; // Assuming this is a string representing date/time
-  service_start_time: string; // Assuming this is a string representing date/time
-  service_end_time?: string; // Assuming this is a string representing date/time
-  service_delivery_offer: ServiceDeliveryOffer;
-  provider_review_log?: ProviderReviewLog;
+  service_deliver_on: Date;
+  service_start_time: Date;
+  service_end_time?: Date | null;
+  service_delivery_offer: DeliveryOffer;
+  provider_review_log?: ReviewLog | null;
 }
 
 export interface Admin {
-  id: number;
-  password: string;
-  email: string;
-  image?: string;
+  id: string;
+  userId: string;
+  user: User;
 }
+
+export enum UserType {
+  Admin = "Admin",
+  Provider = "Provider",
+  Customer = "Customer",
+}
+
+export type Restaurant = {
+  _id: string;
+  user: string;
+  restaurantName: string;
+  city: string;
+  country: string;
+  deliveryPrice: number;
+  estimatedDeliveryTime: number;
+  cuisines: string[];
+  menuItems: MenuItem[];
+  imageUrl: string;
+  lastUpdated: string;
+};
+
+export type MenuItem = {
+  _id: string;
+  name: string;
+  price: number;
+};
+
+export type DayRange = {
+  from: Date | null;
+  to: Date | null;
+};
+
+export type SearchState = {
+  searchQuery: string;
+  priceRange: number;
+  timeOfDay: string;
+  sortOption: string;
+  categoryId?: string; // Add this line
+  serviceId?: string; // Add this line
+};

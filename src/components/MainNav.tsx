@@ -1,5 +1,5 @@
-import { Button } from "./ui/button";
-import { LogIn } from "lucide-react";
+import { Link } from "react-router-dom";
+import { User } from "lucide-react";
 import { useAuth0 } from "@auth0/auth0-react";
 import UsernameMenu from "./UsernameMenu";
 
@@ -7,49 +7,63 @@ const MainNav = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
   const iconColor = "#222831";
 
+  const handleLogin = () => {
+    // Store returnTo in local storage before redirecting to login
+    localStorage.setItem("returnTo", window.location.pathname);
+    // Redirect to login page
+    loginWithRedirect();
+  };
+
   return (
-    <nav className='flex justify-between items-center'>
-      <ul className='flex justify-between flex-grow'>
+    <nav className="flex justify-between items-center">
+      <ul className="flex justify-center space-x-8">
         <li>
-          <Button
-            variant='ghost'
-            className='text-[#222831] cursor-pointer hover:text-[#F3CF00]'
+          <Link
+            to="/"
+            className="text-[#222831] cursor-pointer hover:text-[#F3CF00]"
           >
             Home
-          </Button>
+          </Link>
         </li>
         <li>
-          <Button
-            variant='ghost'
-            className='text-[#222831] cursor-pointer hover:text-[#F3CF00]'
+          <Link
+            to="/categories"
+            className="text-[#222831] cursor-pointer hover:text-[#F3CF00]"
           >
             Categories
-          </Button>
+          </Link>
         </li>
         <li>
-          <Button
-            variant='ghost'
-            className='text-[#222831] cursor-pointer hover:text-[#F3CF00]'
+          <Link
+            to="/about-us"
+            className="text-[#222831] cursor-pointer hover:text-[#F3CF00]"
           >
             About Us
-          </Button>
+          </Link>
+        </li>
+        {/* Add a link to the search page */}
+        <li>
+          <Link
+            to="/search"
+            className="text-[#222831] cursor-pointer hover:text-[#F3CF00]"
+          >
+            Search
+          </Link>
         </li>
       </ul>
-      <ul className='flex justify-end space-x-4'>
+      <ul className="flex space-x-4">
         <li>
-          <span>
-            {isAuthenticated ? (
-              <UsernameMenu />
-            ) : (
-              <Button
-                variant='ghost'
-                className='text-[#222831] cursor-pointer hover:text-[#F3CF00]'
-                onClick={async () => await loginWithRedirect()}
-              >
-                <LogIn size={24} color={iconColor} /> Log In
-              </Button>
-            )}
-          </span>
+          {isAuthenticated ? (
+            <UsernameMenu />
+          ) : (
+            <button
+              className="flex items-center text-[#222831] cursor-pointer hover:text-[#F3CF00] ml-4"
+              onClick={handleLogin}
+            >
+              <User size={24} color={iconColor} />
+              <span className="ml-2">Log In</span>
+            </button>
+          )}
         </li>
       </ul>
     </nav>

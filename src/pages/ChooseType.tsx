@@ -15,7 +15,7 @@ const ChooseType = () => {
   const { user } = useAuth0();
   const { currentUser } = useGetMyUser();
   const { updateUserType } = useUpdateUserType();
-
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
   useEffect(() => {
     console.log("Current user:", currentUser);
     if (currentUser) {
@@ -32,8 +32,8 @@ const ChooseType = () => {
   };
 
   const handleNextClick = async () => {
-    if (selectedCard && !isAnimating && !isLoading) {
-      setIsLoading(true);
+    if (selectedCard && !isAnimating && !isLoading && !isButtonLoading) {
+      setIsButtonLoading(true);
       try {
         const auth0Id = user?.sub ?? "";
         const type = selectedCard === "customer" ? "Customer" : "Provider";
@@ -44,7 +44,8 @@ const ChooseType = () => {
         }, 500);
       } catch (error) {
         console.error("Error updating user type:", error);
-        setIsLoading(false);
+      } finally {
+        setIsButtonLoading(false);
       }
     }
   };
@@ -103,9 +104,9 @@ const ChooseType = () => {
           selectedCard ? "" : "opacity-50 cursor-not-allowed"
         }`}
         onClick={handleNextClick}
-        disabled={!selectedCard || isLoading}
+        disabled={!selectedCard || isLoading || isButtonLoading}
       >
-        {isLoading ? (
+        {isButtonLoading ? (
           <div className='flex items-center justify-center'>
             <span className='animate-spin h-5 w-5 mr-2'>
               <svg

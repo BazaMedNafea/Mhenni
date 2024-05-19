@@ -1,5 +1,6 @@
 import { User } from "@/types";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 
@@ -9,6 +10,9 @@ export const useGetMyUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const getMyUserRequest = async (): Promise<User> => {
+    // Introduce a 3-second delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}api/my/user`, {
@@ -30,7 +34,9 @@ export const useGetMyUser = () => {
     data: currentUser,
     isLoading,
     error,
-  } = useQuery("fetchCurrentUser", getMyUserRequest);
+  } = useQuery("fetchCurrentUser", getMyUserRequest, {
+    keepPreviousData: true, // Add this option to keep previous data on re-renders
+  });
 
   if (error) {
     toast.error(error.toString());
@@ -52,9 +58,19 @@ type CreateUserRequest = {
 
 export const useCreateMyUser = () => {
   const { getAccessTokenSilently } = useAuth0();
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
 
   const createMyUserRequest = async (customer: CreateUserRequest) => {
     try {
+      // Check if a user creation request is already in progress
+      if (isCreatingUser) {
+        console.log("User creation request already in progress, skipping...");
+        return;
+      }
+
+      // Set the flag to indicate that a user creation request is in progress
+      setIsCreatingUser(true);
+
       const accessToken = await getAccessTokenSilently();
       const response = await fetch(`${API_BASE_URL}api/my/user`, {
         method: "POST",
@@ -78,12 +94,14 @@ export const useCreateMyUser = () => {
         console.log(
           "User with this email already exists, proceeding with login"
         );
-        return; // Exit the function without throwing an error
       } else {
         // Log other errors
         console.error("Error creating customer:", error);
         throw error; // Re-throw the error for the caller to handle
       }
+    } finally {
+      // Reset the flag after the user creation request is completed
+      setIsCreatingUser(false);
     }
   };
 
@@ -114,6 +132,9 @@ export const useUpdateMyUser = () => {
 
   const updateMyUserRequest = async (formData: UpdateMyUserRequest) => {
     console.log("updateMyCustomerRequest called with formData:", formData);
+
+    // Introduce a 3-second delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const accessToken = await getAccessTokenSilently();
     console.log("Access token retrieved:", accessToken);
@@ -154,7 +175,7 @@ export const useUpdateMyUser = () => {
 
   if (isSuccess) {
     console.log("Customer profile updated successfully!");
-    toast.success("Customer profile updated!");
+    toast.success("User profile updated!");
   }
 
   if (error) {
@@ -186,6 +207,9 @@ export const useUpdateUserType = () => {
     auth0Id,
     type,
   }: UpdateUserTypeRequest) => {
+    // Introduce a 3-second delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const accessToken = await getAccessTokenSilently();
 
     const response = await fetch(`${API_BASE_URL}api/my/user/type`, {

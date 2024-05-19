@@ -10,6 +10,7 @@ const UserForm = () => {
   const [isAnimating, setIsAnimating] = useState(true);
   const [isLoading, setIsLoading] = useState(true); // New state for loading
   const { currentUser } = useGetMyUser();
+  const returnTo = localStorage.getItem("returnTo") || "/";
   const [formValues, setFormValues] = useState({
     firstName: "",
     lastName: "",
@@ -39,7 +40,6 @@ const UserForm = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormValues((prevValues) => ({
@@ -54,22 +54,16 @@ const UserForm = () => {
 
   const handleFinishClick = async () => {
     try {
-      setIsLoading(true); // Set loading state to true
+      setIsLoading(true);
       await updateUser(formValues);
-      setIsAnimating(true); // Set animation state after the request is complete
       setTimeout(() => {
-        navigate("/");
+        navigate(returnTo);
       }, 500);
     } catch (error) {
       console.error("Error updating user:", error);
-    } finally {
-      setIsLoading(false); // Set loading state to false after the request is complete
+      setIsLoading(false);
     }
   };
-
-  if (isLoading || !currentUser) {
-    return <div></div>;
-  }
 
   return (
     <div
@@ -77,47 +71,48 @@ const UserForm = () => {
         isAnimating ? "slide-in" : ""
       }`}
     >
-      <div className='bg-white rounded-lg shadow-md px-8 py-6 w-full max-w-md mb-4 transition-transform duration-500 translate-x-0 opacity-100'>
-        <h3 className='text-xl font-bold text-[#222831] mb-4'>
+      {" "}
+      <div className="bg-white rounded-lg shadow-md px-8 py-6 w-full max-w-md mb-4 transition-transform duration-500 translate-x-0 opacity-100">
+        <h3 className="text-xl font-bold text-[#222831] mb-4">
           Complete Information Form
         </h3>
-        <div className='mb-4'>
+        <div className="mb-4">
           <input
-            type='text'
-            placeholder='First Name'
-            name='firstName'
+            type="text"
+            placeholder="First Name"
+            name="firstName"
             value={formValues.firstName}
             onChange={handleInputChange}
-            className='border-2 border-[#222831] rounded-md px-3 py-2 w-full focus:outline-none text-gray-700'
+            className="border-2 border-[#222831] rounded-md px-3 py-2 w-full focus:outline-none text-gray-700"
           />
         </div>
-        <div className='mb-4'>
+        <div className="mb-4">
           <input
-            type='text'
-            placeholder='Last Name'
-            name='lastName'
+            type="text"
+            placeholder="Last Name"
+            name="lastName"
             value={formValues.lastName}
             onChange={handleInputChange}
-            className='border-2 border-[#222831] rounded-md px-3 py-2 w-full focus:outline-none text-gray-700'
+            className="border-2 border-[#222831] rounded-md px-3 py-2 w-full focus:outline-none text-gray-700"
           />
         </div>
-        <div className='mb-4'>
+        <div className="mb-4">
           <input
-            type='text'
-            placeholder='Type'
-            name='type'
+            type="text"
+            placeholder="Type"
+            name="type"
             value={formValues.type}
             onChange={handleInputChange}
-            className='border-2 border-[#222831] rounded-md px-3 py-2 w-full focus:outline-none text-gray-700'
+            className="border-2 border-[#222831] rounded-md px-3 py-2 w-full focus:outline-none text-gray-700"
             disabled // Make the input disabled
           />
         </div>
-        <div className='flex justify-between'>
+        <div className="flex justify-between">
           <button
-            className='bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 transition-colors duration-300 flex items-center'
+            className="bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 transition-colors duration-300 flex items-center"
             onClick={handleBackClick}
           >
-            <FontAwesomeIcon icon={faArrowLeft} className='mr-2' />
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
             Back
           </button>
           <button
@@ -128,13 +123,13 @@ const UserForm = () => {
             disabled={isLoading}
           >
             {isLoading ? (
-              <div className='flex items-center justify-center'>
-                <span className='animate-spin h-5 w-5 mr-2'>
+              <div className="flex items-center justify-center">
+                <span className="animate-spin h-5 w-5 mr-2">
                   <svg
-                    className='h-5 w-5 text-white'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
+                    className="h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
                   >
                     {/* Add your loading spinner SVG here */}
                   </svg>
@@ -143,7 +138,7 @@ const UserForm = () => {
               </div>
             ) : (
               <>
-                <FontAwesomeIcon icon={faCheckCircle} className='mr-2' />
+                <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
                 Finish
               </>
             )}

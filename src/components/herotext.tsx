@@ -1,11 +1,65 @@
 import { motion } from "framer-motion";
-
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import SearchBar, { SearchForm } from "./SearchBar";
 
 export default function Test() {
-  const handleSearchSubmit = (_searchFormValues: SearchForm) => {
-    // Handle search submission
+  const navigate = useNavigate(); // Create a navigate function
+
+  const handleSearchSubmit = (searchFormValues: SearchForm) => {
+    // Navigate to the SearchPage component with the search query as a parameter
+    navigate(`/search?query=${searchFormValues.searchQuery}`);
   };
+
+  const wilayaOptions = [
+    "Adrar",
+    "Chlef",
+    "Laghouat",
+    "Oum El Bouaghi",
+    "Batna",
+    "Béjaïa",
+    "Biskra",
+    "Béchar",
+    "Blida",
+    "Bouira",
+    "Tamanrasset",
+    "Tébessa",
+    "Tlemcen",
+    "Tiaret",
+    "Tizi Ouzou",
+    "Algiers",
+    "Djelfa",
+    "Jijel",
+    "Sétif",
+    "Saïda",
+    "Skikda",
+    "Sidi Bel Abbès",
+    "Annaba",
+    "Guelma",
+    "Constantine",
+    "Médéa",
+    "Mostaganem",
+    "M'Sila",
+    "Mascara",
+    "Ouargla",
+    "Oran",
+    "El Bayadh",
+    "Illizi",
+    "Bordj Bou Arréridj",
+    "Boumerdès",
+    "El Tarf",
+    "Tindouf",
+    "Tissemsilt",
+    "El Oued",
+    "Khenchela",
+    "Souk Ahras",
+    "Tipaza",
+    "Mila",
+    "Aïn Defla",
+    "Naâma",
+    "Aïn Témouchent",
+    "Ghardaïa",
+    "Relizane",
+  ];
 
   return (
     <div className='absolute inset-0 flex items-center justify-center'>
@@ -33,8 +87,9 @@ export default function Test() {
         </motion.span>
 
         <SearchBar
-          placeHolder='Search by City or Town'
+          placeHolder='Search any service'
           onSubmit={handleSearchSubmit}
+          wilayaOptions={wilayaOptions}
         />
       </motion.div>
     </div>

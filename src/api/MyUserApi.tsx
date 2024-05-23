@@ -236,3 +236,51 @@ export const useUpdateUserType = () => {
 
   return { updateUserType, isLoading, error };
 };
+
+export const useUpdateUserProfilePicture = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const updateUserProfilePictureRequest = async (file: File) => {
+    const accessToken = await getAccessTokenSilently();
+    const formData = new FormData();
+    formData.append("imageFile", file);
+
+    const response = await fetch(`${API_BASE_URL}api/my/user/image`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user profile picture");
+    }
+
+    return response.json();
+  };
+
+  const {
+    mutateAsync: updateUserProfilePicture,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+  } = useMutation(updateUserProfilePictureRequest);
+
+  if (isSuccess) {
+    toast.success("Profile picture updated successfully!");
+  }
+
+  if (isError && error instanceof Error) {
+    toast.error(error.toString());
+  }
+
+  return {
+    updateUserProfilePicture,
+    isLoading,
+    isError,
+    isSuccess,
+    error,
+  };
+};

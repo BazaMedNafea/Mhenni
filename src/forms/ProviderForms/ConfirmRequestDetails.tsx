@@ -14,14 +14,11 @@ import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
-import { DatePickerWithPresets } from "@/components/DatePickerWithPresets";
-import { format } from "date-fns";
-import { TimePickerWithPresets } from "@/components/TimePickerWithPresents";
 
 const formSchema = z.object({
   email: z.string().optional(),
-  firstName: z.string().min(1, "name is required"),
-  lastName: z.string().min(1, "name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   addresses: z
     .array(
       z.object({
@@ -33,8 +30,6 @@ const formSchema = z.object({
     )
     .optional()
     .default([]),
-  date: z.string().optional(),
-  time: z.string().optional(),
 });
 
 export type UserFormData = z.infer<typeof formSchema>;
@@ -108,7 +103,7 @@ const wilayaOptions = [
   "Relizane",
 ];
 
-const ProviderProfileForm = ({
+const ConfirmRequestDetails = ({
   onSave,
   isLoading,
   currentUser,
@@ -266,46 +261,6 @@ const ProviderProfileForm = ({
             )
           )}
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
-          <FormField
-            control={form.control}
-            name="date"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Date</FormLabel>
-                <FormControl>
-                  <div className="bg-white">
-                    <DatePickerWithPresets
-                      onSelect={(date) =>
-                        field.onChange(date ? format(date, "MM/dd/yyyy") : "")
-                      }
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="time"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Time</FormLabel>
-                <FormControl>
-                  <div className="bg-white">
-                    <TimePickerWithPresets
-                      onSelect={(time) =>
-                        field.onChange(time ? format(time, "p") : "")
-                      }
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
         {isLoading ? (
           <LoadingButton />
         ) : (
@@ -318,4 +273,4 @@ const ProviderProfileForm = ({
   );
 };
 
-export default ProviderProfileForm;
+export default ConfirmRequestDetails;

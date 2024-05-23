@@ -14,13 +14,15 @@ import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { User } from "@/types";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import React from "react";
+import { useUpdateUserProfilePicture } from "@/api/MyUserApi"; // Import the hook
 
 const formSchema = z.object({
   email: z.string().optional(),
-  firstName: z.string().min(1, "name is required"),
-  lastName: z.string().min(1, "name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  image: z.string().optional(),
   addresses: z
     .array(
       z.object({
@@ -51,12 +53,46 @@ const UserProfileForm = ({
   title = "User Profile",
   buttonText = "Submit",
 }: Props) => {
+  const [profilePicture, setProfilePicture] = useState<string>(
+    currentUser.image || ""
+  );
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { updateUserProfilePicture, isLoading: isUploading } =
+    useUpdateUserProfilePicture();
+
+  const handleProfilePictureClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleProfilePictureChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfilePicture(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Trigger the upload function
+      try {
+        await updateUserProfilePicture(file);
+      } catch (error) {
+        console.error("Failed to update profile picture:", error);
+      }
+    }
+  };
+
   const flattenedUser = {
     email: currentUser.email || "",
     firstName: currentUser.firstName || "",
     lastName: currentUser.lastName || "",
+    profilePicture: currentUser.image || "",
     addresses:
-      currentUser.customer?.addresses || currentUser.provider?.addresses || [], // Get addresses from customer or provider
+      currentUser.customer?.addresses || currentUser.provider?.addresses || [],
   };
   if (flattenedUser.addresses.length === 0) {
     flattenedUser.addresses.push({
@@ -79,190 +115,167 @@ const UserProfileForm = ({
   }, [currentUser, form]);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSave)}
-        className="space-y-4 bg-gray-50 rounded-lg md:p-10"
-      >
-        <div>
-          <h2 className="text-2xl font-bold">{title}</h2>
-          <FormDescription>
-            View and change your profile information here
-          </FormDescription>
-        </div>
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input {...field} disabled className="bg-white" />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="firstName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="p-6 bg-white shadow-md rounded-lg max-w-3xl mx-auto mt-10">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSave)} className="space-y-6">
+          <div>
+            <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+              {title}
+            </h2>
+            <FormDescription>
+              View and change your profile information here
+            </FormDescription>
+          </div>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          {(flattenedUser.addresses.length === 0 ||
-            !flattenedUser.addresses) && (
-            <React.Fragment>
-              <FormField
-                control={form.control}
-                name={`addresses.0.street`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Street</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`addresses.0.city`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`addresses.0.wilaya`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Wilaya</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`addresses.0.zip`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Zip</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-white" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </React.Fragment>
+          <div className="flex flex-col items-center mb-6">
+            <img
+              src={profilePicture}
+              alt="Profile"
+              className="w-32 h-32 rounded-full object-cover shadow-lg cursor-pointer"
+              onClick={handleProfilePictureClick}
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              className="hidden"
+              onChange={handleProfilePictureChange}
+            />
+            {isUploading && <p>Uploading...</p>}
+          </div>
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    disabled
+                    className="bg-gray-100 border-gray-300"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-gray-100 border-gray-300" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input {...field} className="bg-gray-100 border-gray-300" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="space-y-6">
+            {flattenedUser.addresses.map((_address, index) => (
+              <div key={index} className="space-y-4">
+                <h3 className="text-xl font-semibold text-gray-700">
+                  Address {index + 1}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`addresses.${index}.street`}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Street</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="bg-gray-100 border-gray-300"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`addresses.${index}.city`}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="bg-gray-100 border-gray-300"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`addresses.${index}.wilaya`}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Wilaya</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="bg-gray-100 border-gray-300"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`addresses.${index}.zip`}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Zip</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="bg-gray-100 border-gray-300"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {isLoading ? (
+            <LoadingButton />
+          ) : (
+            <Button
+              type="submit"
+              className="w-full py-2 bg-orange-500 text-white rounded-lg shadow hover:bg-orange-600"
+            >
+              {buttonText}
+            </Button>
           )}
-          {flattenedUser.addresses?.map(
-            (
-              _address: {
-                street: string;
-                city: string;
-                wilaya: string;
-                zip: string;
-              },
-              index: number
-            ) => (
-              <React.Fragment key={index}>
-                <FormField
-                  control={form.control}
-                  name={`addresses.${index}.street`}
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Street</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={`addresses.${index}.city`}
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>City</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={`addresses.${index}.wilaya`}
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Wilaya</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={`addresses.${index}.zip`}
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Zip</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </React.Fragment>
-            )
-          )}
-        </div>
-        {isLoading ? (
-          <LoadingButton />
-        ) : (
-          <Button type="submit" className="bg-orange-500">
-            {buttonText}
-          </Button>
-        )}
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </div>
   );
 };
 

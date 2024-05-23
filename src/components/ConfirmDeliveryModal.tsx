@@ -1,7 +1,5 @@
-// ConfirmDeliveryModal.tsx
-
 import React from "react";
-import UserProfileForm1 from "@/forms/ProviderForms/ConfirmRequestDetails";
+import ConfirmRequestDetails from "@/forms/ProviderForms/ConfirmRequestDetails";
 import { useAddServiceRequest } from "@/api/MyCustomerApi";
 import { toast } from "sonner";
 import { ServiceProviderMap } from "@/types";
@@ -37,16 +35,13 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
   const navigate = useNavigate();
 
   const handleSaveDeliveryDetails = async (userProfileData: any) => {
-    const { email, firstName, lastName, addresses, date, time } =
-      userProfileData;
+    const { email, firstName, lastName, addresses } = userProfileData;
 
     if (
       !email ||
       !firstName ||
       !lastName ||
       !addresses ||
-      !date ||
-      !time ||
       selectedServices.length === 0
     ) {
       console.error(
@@ -59,13 +54,11 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
     }
 
     const address = addresses[0];
-    const expectedStartTime = new Date(`${date} ${time}`).toISOString();
 
     const serviceRequests = selectedServices.map((service) => ({
       id: service.id,
       serviceId: service.service.id,
       requirementDesc: "REQUIREMENT_DESCRIPTION_PLACEHOLDER",
-      expectedStartTime: expectedStartTime,
       providerId: providerId,
       customAddress: {
         street: address.street,
@@ -99,10 +92,10 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
       {showDeliveryDetails && (
         <>
           <div
-            className='fixed inset-0 bg-black bg-opacity-50 z-40'
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={handleClose}
           ></div>
-          <div className='fixed inset-0 flex items-center justify-center z-50'>
+          <div className="fixed inset-0 flex items-center justify-center z-50">
             <div
               className={`bg-white rounded-lg p-6 max-w-2xl mx-auto relative confirm-delivery-details ${
                 showDeliveryDetails ? "show" : ""
@@ -110,13 +103,13 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
             >
               <button
                 onClick={handleClose}
-                className='absolute top-0 right-0 m-4'
+                className="absolute top-0 right-0 m-4"
               >
                 X
               </button>
-              <div className='max-h-[80vh] overflow-y-auto'>
-                <div className='mb-4'>
-                  <UserProfileForm1
+              <div className="max-h-[80vh] overflow-y-auto">
+                <div className="mb-4">
+                  <ConfirmRequestDetails
                     currentUser={{
                       firstName: currentUser?.firstName,
                       lastName: currentUser?.lastName,

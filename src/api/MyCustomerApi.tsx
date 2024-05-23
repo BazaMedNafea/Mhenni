@@ -15,8 +15,6 @@ interface CustomAddress {
 interface RequestData {
   serviceId: number;
   requirementDesc?: string;
-  expectedStartDate?: string;
-  expectedStartTime: string;
   providerId: string;
   customAddress?: CustomAddress;
 }

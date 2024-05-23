@@ -15,7 +15,52 @@ import LoadingSpinner from "../components/LoadingSpinner"; // Import the Loading
 const wilayaOptions = [
   "Adrar",
   "Chlef",
-  // Add more wilayas here
+  "Laghouat",
+  "Oum El Bouaghi",
+  "Batna",
+  "Béjaïa",
+  "Biskra",
+  "Béchar",
+  "Blida",
+  "Bouira",
+  "Tamanrasset",
+  "Tébessa",
+  "Tlemcen",
+  "Tiaret",
+  "Tizi Ouzou",
+  "Algiers",
+  "Djelfa",
+  "Jijel",
+  "Sétif",
+  "Saïda",
+  "Skikda",
+  "Sidi Bel Abbès",
+  "Annaba",
+  "Guelma",
+  "Constantine",
+  "Médéa",
+  "Mostaganem",
+  "M'Sila",
+  "Mascara",
+  "Ouargla",
+  "Oran",
+  "El Bayadh",
+  "Illizi",
+  "Bordj Bou Arréridj",
+  "Boumerdès",
+  "El Tarf",
+  "Tindouf",
+  "Tissemsilt",
+  "El Oued",
+  "Khenchela",
+  "Souk Ahras",
+  "Tipaza",
+  "Mila",
+  "Aïn Defla",
+  "Naâma",
+  "Aïn Témouchent",
+  "Ghardaïa",
+  "Relizane",
 ];
 
 export type SearchState = {
@@ -29,12 +74,13 @@ export type SearchState = {
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("query") || "";
+  const selectedWilaya = searchParams.get("wilaya");
   const [searchState, setSearchState] = useState<SearchState>({
     searchQuery,
     sortOption: "bestMatch",
     selectedCategory: "",
     selectedService: "",
-    selectedWilaya: undefined,
+    selectedWilaya: selectedWilaya || undefined,
   });
   const [_isExpanded, setIsExpanded] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,6 +129,7 @@ const SearchPage = () => {
     setSearchState({
       ...searchState,
       searchQuery: searchFormData.searchQuery || "",
+      selectedWilaya: searchFormData.selectedWilaya,
     });
     setCurrentPage(1); // Reset currentPage to 1 when performing a search
     setFetchedServices(false); // Reset fetchedServices flag
@@ -99,12 +146,10 @@ const SearchPage = () => {
     setCurrentPage(1); // Reset currentPage to 1
     setFetchedServices(false); // Reset fetchedServices flag
   };
-
   // Display loading state while fetching services
   if (isLoadingCategories || isLoadingServiceProviderMaps || loading) {
     return <LoadingSpinner />;
   }
-
   const filteredServices = serviceProviderMaps.flatMap((serviceProviderMap) => {
     const serviceNameMatch = serviceProviderMap.service.service_name
       .toLowerCase()
@@ -178,6 +223,7 @@ const SearchPage = () => {
           placeHolder='Search by Cuisine or Service Name'
           onReset={resetSearch}
           wilayaOptions={wilayaOptions}
+          className='search-bar-black' // Add a custom class name
         />
         <div className='flex justify-between flex-col gap-3 lg:flex-row'>
           {searchState.searchQuery && (

@@ -112,14 +112,6 @@
   }
 }
 /* Hide scrollbar for Chrome, Safari and Opera */
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-* {
-  scrollbar-width: none;
-}
 
 .confirm-delivery-details {
   display: flex;
@@ -173,4 +165,26 @@
   100% {
     transform: scale(1);
   }
+}
+
+.search-bar-black {
+  color: black;
+}
+
+/* Styles for herotext */
+.search-bar-white {
+  color: white;
+}
+
+.wilaya-select-white {
+  color: white; /* Change this to the desired color */
+}
+
+.wilaya-select-black {
+  color: black; /* Change this to the desired color */
+}
+
+.service-section {
+  padding-top: 0;
+  margin-top: 0;
 }

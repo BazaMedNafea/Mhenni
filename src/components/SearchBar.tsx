@@ -14,8 +14,8 @@ import {
 import { useEffect, useState } from "react";
 
 const formSchema = z.object({
-  searchQuery: z.string(), // Make searchQuery a required field
-  selectedWilaya: z.string(), // Make selectedWilaya a required field
+  searchQuery: z.string().nonempty("Search query is required"),
+  selectedWilaya: z.string().nonempty("Wilaya selection is required"),
 });
 
 export type SearchForm = z.infer<typeof formSchema>;
@@ -26,6 +26,8 @@ type Props = {
   onReset?: () => void;
   searchQuery?: string;
   wilayaOptions: string[];
+  className?: string;
+  wilayaSelectClassName?: string;
 };
 
 const SearchBar = ({
@@ -34,6 +36,8 @@ const SearchBar = ({
   placeHolder,
   searchQuery = "",
   wilayaOptions,
+  className,
+  wilayaSelectClassName,
 }: Props) => {
   const [selectedWilaya, setSelectedWilaya] = useState<string>("");
 
@@ -52,6 +56,7 @@ const SearchBar = ({
   const handleReset = () => {
     form.reset({
       searchQuery: "",
+      selectedWilaya: "",
     });
 
     if (onReset) {
@@ -65,31 +70,33 @@ const SearchBar = ({
 
   const handleWilayaChange = (value: string) => {
     setSelectedWilaya(value);
+    form.setValue("selectedWilaya", value);
   };
 
   return (
     <form
       onSubmit={form.handleSubmit(handleSubmit)}
-      className={`flex items-center gap-3 justify-between flex-row border-2 rounded-full p-3 ${
+      className={`flex items-center gap-3 justify-between flex-row border-2 rounded-full p-3 backdrop-blur-md bg-white/30 ${
         form.formState.errors.searchQuery && "border-red-500"
-      } bg-transparent`}
+      }`}
     >
       <Search
         strokeWidth={2.5}
         size={30}
-        className='ml-1 text-yellow-300 hidden md:block'
+        className={`ml-1 hidden md:block text-white ${className}`}
       />
       <Input
         {...form.register("searchQuery")}
-        className='border-none shadow-none text-xl focus-visible:ring-0 placeholder:text-white block bg-transparent text-white flex-1'
+        className={`border-none shadow-none text-xl focus-visible:ring-0 placeholder:text-gray-200 text-white bg-transparent flex-1 ${className}`}
         placeholder={placeHolder}
       />
 
       <div className='flex items-center gap-2'>
-        <div className='text-sm font-semibold text-white'>Wilaya</div>
         <Select value={selectedWilaya} onValueChange={handleWilayaChange}>
-          <SelectTrigger className='w-32'>
-            <SelectValue placeholder='Select' />
+          <SelectTrigger
+            className={`px-3 py-2 text-xl bg-transparent border-none text-white ${wilayaSelectClassName}`}
+          >
+            <SelectValue className='text-xl' placeholder='Select wilaya' />
           </SelectTrigger>
           <SelectContent>
             {wilayaOptions.map((wilaya) => (
@@ -105,7 +112,7 @@ const SearchBar = ({
         onClick={handleReset}
         type='button'
         variant='outline'
-        className='rounded-full'
+        className='rounded-full border-none text-black hover:bg-white/10'
       >
         Reset
       </Button>

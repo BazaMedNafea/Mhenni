@@ -1,8 +1,11 @@
+// ConfirmDeliveryModal.tsx
+
 import React from "react";
 import UserProfileForm1 from "@/forms/ProviderForms/ConfirmRequestDetails";
-import { useAddServiceRequest } from "@/api/MyCustomerApi"; // Import the hook
+import { useAddServiceRequest } from "@/api/MyCustomerApi";
 import { toast } from "sonner";
 import { ServiceProviderMap } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 interface ConfirmDeliveryModalProps {
   providerId: string;
@@ -19,7 +22,7 @@ interface ConfirmDeliveryModalProps {
   }[];
   showDeliveryDetails: boolean;
   handleClose: () => void;
-  selectedServices: ServiceProviderMap[]; // Add this line
+  selectedServices: ServiceProviderMap[];
 }
 
 const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
@@ -28,16 +31,15 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
   showDeliveryDetails,
   handleClose,
   providerId,
-  selectedServices, // Receive the selectedServices prop
+  selectedServices,
 }) => {
   const { addRequest, isLoading: isAddingRequest } = useAddServiceRequest();
+  const navigate = useNavigate();
 
-  const handleSaveDeliveryDetails = (userProfileData: any) => {
-    // Extract data from userProfileData
+  const handleSaveDeliveryDetails = async (userProfileData: any) => {
     const { email, firstName, lastName, addresses, date, time } =
       userProfileData;
 
-    // Check if all required fields are present
     if (
       !email ||
       !firstName ||
@@ -47,7 +49,6 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
       !time ||
       selectedServices.length === 0
     ) {
-      // Handle missing fields error
       console.error(
         "Missing required fields in userProfileData or selectedServices"
       );
@@ -57,18 +58,15 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
       return;
     }
 
-    // Assuming addresses array contains only one address
     const address = addresses[0];
-
-    // Combine date and time into expectedStartTime in the required format
     const expectedStartTime = new Date(`${date} ${time}`).toISOString();
 
-    // Prepare an array of service requests
     const serviceRequests = selectedServices.map((service) => ({
-      serviceId: service.service.id, // Use the service ID from the selected service
-      requirementDesc: "REQUIREMENT_DESCRIPTION_PLACEHOLDER", // Add a description if needed
+      id: service.id,
+      serviceId: service.service.id,
+      requirementDesc: "REQUIREMENT_DESCRIPTION_PLACEHOLDER",
       expectedStartTime: expectedStartTime,
-      providerId: providerId, // Pass the received providerId
+      providerId: providerId,
       customAddress: {
         street: address.street,
         city: address.city,
@@ -77,39 +75,47 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
       },
     }));
 
-    console.log("Service request data:", serviceRequests); // Log the request data array
+    try {
+      const newOrderIds = await addRequest(serviceRequests);
 
-    // Call the addRequest function from the hook with the array of service requests
-    addRequest(serviceRequests);
+      if (newOrderIds && newOrderIds.length > 0) {
+        // Save the new order IDs to local storage
+        localStorage.setItem("newOrderIds", newOrderIds.join(","));
+
+        // Navigate to the order status page for each order ID
+        navigate(`/orders/${newOrderIds.join(",")}`);
+      } else {
+        console.error("No order IDs returned from the API");
+        toast.error("Failed to add service request");
+      }
+    } catch (error) {
+      console.error("Error adding service request:", error);
+      toast.error("Failed to add service request");
+    }
   };
 
   return (
     <>
       {showDeliveryDetails && (
         <>
-          {/* Background overlay */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            className='fixed inset-0 bg-black bg-opacity-50 z-40'
             onClick={handleClose}
           ></div>
-          {/* Modal */}
-          <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className='fixed inset-0 flex items-center justify-center z-50'>
             <div
               className={`bg-white rounded-lg p-6 max-w-2xl mx-auto relative confirm-delivery-details ${
                 showDeliveryDetails ? "show" : ""
               }`}
             >
-              {/* Close Button */}
               <button
                 onClick={handleClose}
-                className="absolute top-0 right-0 m-4"
+                className='absolute top-0 right-0 m-4'
               >
                 X
               </button>
-              <div className="max-h-[80vh] overflow-y-auto">
-                <div className="mb-4">
-                  {/* Display user delivery details here */}
-                  {/* For example: */}
+              <div className='max-h-[80vh] overflow-y-auto'>
+                <div className='mb-4'>
                   <UserProfileForm1
                     currentUser={{
                       firstName: currentUser?.firstName,
@@ -117,8 +123,8 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
                       email: currentUser?.email ? currentUser?.email : "",
                     }}
                     addresses={addresses}
-                    onSave={handleSaveDeliveryDetails} // Pass the function to handle saving delivery details
-                    isLoading={isAddingRequest} // Pass loading state for UI feedback
+                    onSave={handleSaveDeliveryDetails}
+                    isLoading={isAddingRequest}
                   />
                 </div>
               </div>

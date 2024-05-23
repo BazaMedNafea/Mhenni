@@ -13,11 +13,6 @@ export interface User {
   customer?: Customer | null;
   provider?: Provider | null;
 }
-export interface categoriestype {
-  name: string;
-  description: string;
-  image: string;
-}
 
 export interface Provider {
   id: string;
@@ -66,6 +61,7 @@ export interface Category {
 }
 
 export interface Service {
+  service_image_url: string | undefined;
   estimatedDeliveryTime: ReactNode;
   id: number;
   service_name: string;
@@ -196,4 +192,10 @@ export type SearchState = {
   sortOption: string;
   categoryId?: string; // Add this line
   serviceId?: string; // Add this line
+};
+
+export type categoriestype = {
+  name: any;
+  description: string | undefined;
+  image: string;
 };

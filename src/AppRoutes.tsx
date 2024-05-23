@@ -7,11 +7,13 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 import ChooseType from "./pages/ChooseType";
 import CompleteRegistration from "./pages/CompleteRegistration";
 import SearchPage from "./pages/SearchPage";
-import ServiceProviderPage from "./pages/ServiceProviderPage";
+import ServiceProviderPage from "./pages/ProviderProfile";
 import DemandServicePage from "./pages/DemandServicePage";
 import ManageRequestPage from "./pages/ManageRequestPage";
 import ManageServicesPage from "./pages/ManageServicePage";
 import WelcomePage from "./pages/WelcomePage";
+import OrderStatusPage from "./pages/OrderStatusPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 
 const AppRoutes = () => {
   return (
@@ -42,6 +44,32 @@ const AppRoutes = () => {
         element={
           <Layout>
             <SearchPage />
+          </Layout>
+        }
+      />
+      {/* Route for OrderStatusPage */}
+      <Route
+        path="/orders/:orderId"
+        element={
+          <Layout>
+            <OrderStatusPage />
+          </Layout>
+        }
+      />
+
+      <Route
+        path="/orders/:orderId"
+        element={
+          <Layout>
+            <OrderStatusPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/service-details/:id"
+        element={
+          <Layout>
+            <ServiceDetailsPage />
           </Layout>
         }
       />

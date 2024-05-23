@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@hookform/resolvers": "^3.3.4",
@@ -33,7 +36,7 @@
     "embla-carousel-autoplay": "^8.0.2",
     "embla-carousel-react": "^8.0.2",
     "flowbite-react": "^0.9.0",
-    "framer-motion": "^11.0.28",
+    "framer-motion": "^6.5.1",
     "lucide-react": "^0.365.0",
     "next-themes": "^0.3.0",
     "react": "^18.2.0",

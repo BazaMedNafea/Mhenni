@@ -6,8 +6,14 @@ export default function Test() {
   const navigate = useNavigate(); // Create a navigate function
 
   const handleSearchSubmit = (searchFormValues: SearchForm) => {
-    // Navigate to the SearchPage component with the search query as a parameter
-    navigate(`/search?query=${searchFormValues.searchQuery}`);
+    const { searchQuery, selectedWilaya } = searchFormValues;
+    let queryParams = `query=${searchQuery}`;
+
+    if (selectedWilaya) {
+      queryParams += `&wilaya=${selectedWilaya}`;
+    }
+
+    navigate(`/search?${queryParams}`);
   };
 
   const wilayaOptions = [
@@ -90,6 +96,8 @@ export default function Test() {
           placeHolder='Search any service'
           onSubmit={handleSearchSubmit}
           wilayaOptions={wilayaOptions}
+          className='search-bar-white' // Add a different class name
+          wilayaSelectClassName='wilaya-select-white'
         />
       </motion.div>
     </div>

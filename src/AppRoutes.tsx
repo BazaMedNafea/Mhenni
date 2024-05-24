@@ -9,11 +9,12 @@ import CompleteRegistration from "./pages/CompleteRegistration";
 import SearchPage from "./pages/SearchPage";
 import ServiceProviderPage from "./pages/ProviderProfile";
 import DemandServicePage from "./pages/DemandServicePage";
-import ManageRequestPage from "./pages/ManageRequestPage";
+import ManageRequestProvider from "./pages/ManageRequestProvider";
 import ManageServicesPage from "./pages/ManageServicePage";
 import WelcomePage from "./pages/WelcomePage";
 import OrderStatusPage from "./pages/OrderStatusPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
+import ManageRequestCustomer from "./pages/ManageRequestCustomer";
 
 const AppRoutes = () => {
   return (
@@ -83,10 +84,18 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/manage-requests"
+        path="/manage-requests-provider"
         element={
           <Layout>
-            <ManageRequestPage />
+            <ManageRequestProvider />
+          </Layout>
+        }
+      />
+      <Route
+        path="/manage-requests-customer"
+        element={
+          <Layout>
+            <ManageRequestCustomer />
           </Layout>
         }
       />

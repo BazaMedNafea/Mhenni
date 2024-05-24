@@ -274,3 +274,56 @@ export const useDeleteProviderService = () => {
 
   return deleteProviderServiceMutation;
 };
+type OfferData = {
+  requestId: number;
+  offerDates: string[];
+  offerTimes: string[];
+};
+
+export const useCreateProviderOffer = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const createProviderOfferMutation = useMutation(
+    async (data: OfferData) => {
+      try {
+        const accessToken = await getAccessTokenSilently();
+        const response = await fetch(
+          `${API_BASE_URL}api/my/provider/request/${data.requestId}/offer`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              offerDates: data.offerDates,
+              offerTimes: data.offerTimes,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to create provider offer");
+        }
+
+        return response.json();
+      } catch (error) {
+        console.error("Error creating provider offer:", error);
+        throw error;
+      }
+    },
+    {
+      onSuccess: () => {
+        toast.success("Provider offer created successfully!");
+      },
+      onError: (error: any) => {
+        toast.error(
+          error.message || "Failed to create provider offer. Please try again."
+        );
+      },
+    }
+  );
+
+  return createProviderOfferMutation;
+};

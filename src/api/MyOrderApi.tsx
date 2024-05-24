@@ -10,7 +10,7 @@ export const useGetMyOrders = () => {
   const getMyOrdersRequest = async () => {
     const accessToken = await getAccessTokenSilently();
 
-    const response = await fetch(`${API_BASE_URL}api/my/orders/list`, {
+    const response = await fetch(`${API_BASE_URL}api/my/customer/orders/list`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -43,12 +43,15 @@ export const useGetOrdersByIds = (orderIds: string[]) => {
     const accessToken = await getAccessTokenSilently();
 
     const promises = orderIds.map(async (orderId) => {
-      const response = await fetch(`${API_BASE_URL}api/my/orders/${orderId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}api/my/customer/orders/${orderId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch order ${orderId}`);

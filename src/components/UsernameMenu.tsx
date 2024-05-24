@@ -25,26 +25,26 @@ const UsernameMenu = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className='flex items-center px-3 font-bold hover:text-yellow-500 gap-2'>
-        <CircleUserRound className='text-yellow-500' />
+      <DropdownMenuTrigger className="flex items-center px-3 font-bold hover:text-yellow-500 gap-2">
+        <CircleUserRound className="text-yellow-500" />
         {user?.email}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {isProvider && (
           <DropdownMenuItem>
             <Link
-              to='/manage-requests'
-              className='font-bold hover:text-yellow-500'
+              to="/manage-requests-provider"
+              className="font-bold hover:text-yellow-500"
             >
-              Manage Requests (anaya provider)
+              Manage Requests
             </Link>
           </DropdownMenuItem>
         )}
         {isProvider && (
           <DropdownMenuItem>
             <Link
-              to='/manage-services'
-              className='font-bold hover:text-yellow-500'
+              to="/manage-services"
+              className="font-bold hover:text-yellow-500"
             >
               Manage Services
             </Link>
@@ -53,15 +53,15 @@ const UsernameMenu = () => {
         {isCustomer && (
           <DropdownMenuItem>
             <Link
-              to='/customer-dashboard'
-              className='font-bold hover:text-yellow-500'
+              to="/manage-requests-customer"
+              className="font-bold hover:text-yellow-500"
             >
-              Customer Dashboard (anaya customer)
+              Manage Requests
             </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem>
-          <Link to='/profile' className='font-bold hover:text-yellow-500'>
+          <Link to="/profile" className="font-bold hover:text-yellow-500">
             User Profile
           </Link>
         </DropdownMenuItem>
@@ -69,7 +69,7 @@ const UsernameMenu = () => {
         <DropdownMenuItem>
           <Button
             onClick={handleLogout}
-            className='flex flex-1 font-bold bg-yellow-500'
+            className="flex flex-1 font-bold bg-yellow-500"
           >
             Log Out
           </Button>

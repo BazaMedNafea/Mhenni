@@ -116,6 +116,7 @@ export interface DeliveryOffer {
 }
 
 export interface Request {
+  state: string;
   customerName: string;
   customerAddress: string;
   serviceName: string;

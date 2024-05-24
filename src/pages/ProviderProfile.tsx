@@ -11,8 +11,6 @@ import {
 import LoginModal from "@/components/LoginModal";
 import { ServiceProviderMap } from "@/types";
 
-// Import custom scrollbar styles
-
 const ServiceProviderPage = () => {
   const [selectedServices, setSelectedServices] = useState<
     ServiceProviderMap[]
@@ -61,7 +59,11 @@ const ServiceProviderPage = () => {
   };
 
   if (isLoadingProvider || isLoadingOffers) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   const handleOfferClick = (offer: ServiceProviderMap) => {
@@ -75,36 +77,38 @@ const ServiceProviderPage = () => {
 
   return (
     <div className="container mx-auto py-8 relative">
-      <div className="flex items-center">
+      <div className="flex items-center mb-8">
         {/* Service Provider Image */}
-        <div className="rounded-full overflow-hidden border-4 border-white">
+        <div className="rounded-full overflow-hidden border-4 border-white shadow-lg w-24 h-24">
           <img
             src={currentProvider?.user.image}
             alt={"image"}
-            className="inline-block rounded-lg"
+            className="w-full h-full object-cover"
           />
         </div>
         {/* Service Provider Name and Description */}
-        <div className="ml-4 mr-60">
-          <h1 className="text-4xl font-bold mb-4">
+        <div className="ml-6">
+          <h1 className="text-4xl font-bold mb-2">
             {currentProvider?.user.firstName} {currentProvider?.user.lastName}
           </h1>
           <p className="text-gray-700 mb-4">{currentProvider?.description}</p>
-          <h2 className="text-2xl font-semibold mb-2">Rating:</h2>
-          <StarRatings
-            rating={currentProvider?.providerRatings?.avg_overall_rating}
-            starRatedColor="gold"
-            starEmptyColor="gray"
-            numberOfStars={5}
-            starDimension="20px"
-            starSpacing="2px"
-          />
-          <p className="mb-4 text-xl font-medium text-gray-500 dark:text-gray-400">
-            {currentProvider?.providerRatings?.avg_overall_rating.toFixed(2)}{" "}
+          <div className="flex items-center">
+            <h2 className="text-2xl font-semibold mr-2">Rating:</h2>
+            <StarRatings
+              rating={currentProvider?.providerRatings?.avg_overall_rating || 0}
+              starRatedColor="gold"
+              starEmptyColor="gray"
+              numberOfStars={5}
+              starDimension="20px"
+              starSpacing="2px"
+            />
+          </div>
+          <p className="mt-2 text-xl font-medium text-gray-500 dark:text-gray-400">
+            {currentProvider?.providerRatings?.avg_overall_rating?.toFixed(2)}{" "}
             out of 5
           </p>
           <p className="text-xl font-medium text-gray-500">
-            {currentProvider?.providerRatings?.avg_eti_rating.toLocaleString()}{" "}
+            {currentProvider?.providerRatings?.avg_eti_rating?.toLocaleString()}{" "}
             global ratings
           </p>
         </div>
@@ -112,22 +116,22 @@ const ServiceProviderPage = () => {
 
       <div className="flex flex-col h-full">
         <Tabs defaultValue="offers" className="flex-grow">
-          <TabsList className="flex justify-between">
+          <TabsList className="flex justify-around bg-gray-100 rounded-md p-2 mb-4">
             <TabsTrigger
               value="offers"
-              className="flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200"
+              className="flex-1 text-center p-2 rounded-md hover:bg-gray-200 transition-colors duration-200"
             >
               Offers
             </TabsTrigger>
             <TabsTrigger
               value="images"
-              className="flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200"
+              className="flex-1 text-center p-2 rounded-md hover:bg-gray-200 transition-colors duration-200"
             >
               Images
             </TabsTrigger>
             <TabsTrigger
               value="comments"
-              className="flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200"
+              className="flex-1 text-center p-2 rounded-md hover:bg-gray-200 transition-colors duration-200"
             >
               Comments
             </TabsTrigger>
@@ -140,7 +144,7 @@ const ServiceProviderPage = () => {
                 {offers?.map((offer: ServiceProviderMap) => (
                   <div
                     key={offer.id}
-                    className="flex items-center justify-between"
+                    className="flex items-center justify-between bg-white p-4 rounded-md shadow-md"
                   >
                     <p className="text-xl font-bold text-gray-900">
                       {offer.service.service_name}
@@ -165,7 +169,7 @@ const ServiceProviderPage = () => {
                     <img
                       src={offer.image}
                       alt={offer.name}
-                      className="rounded-lg w-full"
+                      className="rounded-lg w-full shadow-md"
                     />
                   </div>
                 ))}

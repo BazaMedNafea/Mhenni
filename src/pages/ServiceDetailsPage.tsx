@@ -54,7 +54,7 @@ const ServiceDetailsPage = () => {
 
   const { service_name, service_category } = service;
   const { user, addresses } = provider;
-  const { firstName, lastName, email } = user;
+  const { firstName, lastName, email, image } = user;
 
   const { discount_in_percentage, is_offer_accepted } =
     service_delivery_offer || {};
@@ -158,10 +158,7 @@ const ServiceDetailsPage = () => {
           </div>
           <div className="p-6 bg-gray-100 flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center mb-4 md:mb-0">
-              <Avatar
-                img="https://randomuser.me/api/portraits/women/68.jpg"
-                rounded={true}
-              />
+              <Avatar img={image} rounded={true} />
               <div className="ml-4">
                 <h4 className="text-lg font-semibold text-gray-800">
                   {firstName} {lastName}

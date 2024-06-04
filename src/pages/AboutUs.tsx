@@ -5,12 +5,9 @@ import { useState } from "react";
 
 import hero from "../assets/hero3.jpg";
 import Benefits from "@/components/Benifts/Benifts";
-import ContactUs from "@/components/ContactUs";
-import { SelectedPage } from "@/types/selectepage";
-import { Blockquote } from "flowbite-react";
 
 export default function AboutUs() {
-  const [isVisible, setIsVisible] = useState(false); // State to control animation visibility
+  const [] = useState(false); // State to control animation visibility
 
   return (
     <div>

@@ -175,7 +175,11 @@ export const useGetServicesByCategory = (categoryId: string | undefined) => {
 
 export const useGetServiceProviderMapById = (id: number) => {
   const getServiceProviderMapByIdRequest =
-    async (): Promise<ServiceProviderMap> => {
+    async (): Promise<ServiceProviderMap | null> => {
+      if (id === 0) {
+        return null; // Return null if id is 0
+      }
+
       const response = await fetch(`${API_BASE_URL}api/public/service/${id}`, {
         method: "GET",
         headers: {

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ConfirmDeliveryModal from "@/components/ConfirmDeliveryModal";
 import { useGetMyUser } from "@/api/MyUserApi";
+import LoginModal from "@/components/LoginModal";
 
 const ServiceDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,7 +12,9 @@ const ServiceDetailsPage = () => {
     null
   );
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
-  const { currentUser } = useGetMyUser();
+  const { currentUser, isLoading: userLoading } = useGetMyUser();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [_isBookingService, setIsBookingService] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -24,11 +27,14 @@ const ServiceDetailsPage = () => {
     }
   }, [id]);
 
-  const { serviceProviderMap, isLoading } = useGetServiceProviderMapById(
-    serviceProviderId ?? 0
-  );
+  useEffect(() => {
+    console.log(currentUser); // Debug line
+  }, [currentUser]);
 
-  if (isLoading) {
+  const { serviceProviderMap, isLoading: serviceProviderLoading } =
+    useGetServiceProviderMapById(serviceProviderId || 0);
+
+  if (userLoading || serviceProviderLoading) {
     return <div>Loading...</div>;
   }
 
@@ -36,6 +42,7 @@ const ServiceDetailsPage = () => {
     return <div>Service provider map not found</div>;
   }
 
+  // Destructure data
   const {
     service,
     billing_rate_per_hour,
@@ -63,11 +70,18 @@ const ServiceDetailsPage = () => {
   ];
 
   const handleBookService = () => {
-    setShowDeliveryDetails(true);
+    if (currentUser) {
+      setShowDeliveryDetails(true);
+      setIsBookingService(true);
+    } else {
+      setShowLoginModal(true);
+    }
   };
 
   const handleClose = () => {
     setShowDeliveryDetails(false);
+    setShowLoginModal(false);
+    setIsBookingService(false);
   };
 
   return (
@@ -173,22 +187,27 @@ const ServiceDetailsPage = () => {
       </div>
 
       {/* Confirm Delivery Details Modal */}
-      <ConfirmDeliveryModal
-        currentUser={{
-          firstName: currentUser?.firstName,
-          lastName: currentUser?.lastName,
-          email: currentUser?.email ? currentUser?.email : "",
-        }}
-        addresses={
-          currentUser?.customer?.addresses ||
-          currentUser?.provider?.addresses ||
-          []
-        }
-        showDeliveryDetails={showDeliveryDetails}
-        handleClose={handleClose}
-        providerId={provider.id?.toString() || ""}
-        selectedServices={[serviceProviderMap]} // Pass the selected service as an array
-      />
+      {currentUser && showDeliveryDetails && (
+        <ConfirmDeliveryModal
+          currentUser={{
+            firstName: currentUser.firstName,
+            lastName: currentUser.lastName,
+            email: currentUser.email || "",
+          }}
+          addresses={
+            currentUser.customer?.addresses ||
+            currentUser.provider?.addresses ||
+            []
+          }
+          showDeliveryDetails={showDeliveryDetails}
+          handleClose={handleClose}
+          providerId={provider.id?.toString() || ""}
+          selectedServices={[serviceProviderMap]} // Pass the selected service as an array
+        />
+      )}
+
+      {/* Login Modal */}
+      {showLoginModal && <LoginModal setShowLoginModal={setShowLoginModal} />}
     </div>
   );
 };

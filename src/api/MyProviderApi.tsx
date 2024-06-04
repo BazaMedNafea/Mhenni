@@ -25,7 +25,7 @@ export const useGetProviderRequests = () => {
     try {
       const [, getAccessTokenSilently] = context.queryKey;
       const accessToken = await getAccessTokenSilently();
-      const response = await fetch(`${API_BASE_URL}api/my/provider/request`, {
+      const response = await fetch(`${API_BASE_URL}api/my/provider/requests`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -48,6 +48,7 @@ export const useGetProviderRequests = () => {
     data: providerRequests,
     isLoading,
     error,
+    refetch,
   } = useQuery(
     ["fetchProviderRequests", getAccessTokenSilently],
     getProviderRequestsRequest,
@@ -61,7 +62,7 @@ export const useGetProviderRequests = () => {
     toast.error(error.toString());
   }
 
-  return { providerRequests, isLoading };
+  return { providerRequests, isLoading, refetch };
 };
 
 type ServiceData = {
@@ -288,7 +289,7 @@ export const useCreateProviderOffer = () => {
       try {
         const accessToken = await getAccessTokenSilently();
         const response = await fetch(
-          `${API_BASE_URL}api/my/provider/request/${data.requestId}/offer`,
+          `${API_BASE_URL}api/my/provider/requests/${data.requestId}/offer`,
           {
             method: "POST",
             headers: {
@@ -326,4 +327,54 @@ export const useCreateProviderOffer = () => {
   );
 
   return createProviderOfferMutation;
+};
+
+type ConfirmRequestData = {
+  requestId: number;
+  customerConfirmation: boolean; // Add this property
+};
+
+export const useConfirmProviderRequestCompletion = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  return useMutation(
+    async (data: ConfirmRequestData) => {
+      try {
+        const accessToken = await getAccessTokenSilently();
+        const response = await fetch(
+          `${API_BASE_URL}api/my/provider/requests/${data.requestId}/complete`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              customerConfirmation: data.customerConfirmation,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to confirm request");
+        }
+
+        return response.json();
+      } catch (error) {
+        console.error("Error confirming provider request:", error);
+        throw error;
+      }
+    },
+    {
+      onSuccess: () => {
+        toast.success("Request confirmed successfully!");
+      },
+      onError: (error: any) => {
+        toast.error(
+          error.message || "Failed to confirm request. Please try again."
+        );
+      },
+    }
+  );
 };

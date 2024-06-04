@@ -6,10 +6,16 @@ import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const useGetMyUser = () => {
-  const { getAccessTokenSilently } = useAuth0();
+// Updated useGetMyUser hook
 
-  const getMyUserRequest = async (): Promise<User> => {
+export const useGetMyUser = () => {
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+
+  const getMyUserRequest = async (): Promise<User | null> => {
+    if (!isAuthenticated) {
+      return null;
+    }
+
     // Introduce a 3-second delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -30,17 +36,14 @@ export const useGetMyUser = () => {
     return response.json();
   };
 
-  const {
-    data: currentUser,
-    isLoading,
-    error,
-  } = useQuery("fetchCurrentUser", getMyUserRequest, {
-    keepPreviousData: true, // Add this option to keep previous data on re-renders
-  });
-
-  if (error) {
-    toast.error(error.toString());
-  }
+  const { data: currentUser, isLoading } = useQuery(
+    "fetchCurrentUser",
+    getMyUserRequest,
+    {
+      keepPreviousData: true, // Add this option to keep previous data on re-renders
+      enabled: isAuthenticated, // Only fetch when authenticated
+    }
+  );
 
   return { currentUser, isLoading };
 };

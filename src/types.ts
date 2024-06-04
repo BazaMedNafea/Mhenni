@@ -61,6 +61,7 @@ export interface Category {
 }
 
 export interface Service {
+  provider: any;
   service_image_url: string | undefined;
   estimatedDeliveryTime: ReactNode;
   id: number;
@@ -116,6 +117,8 @@ export interface DeliveryOffer {
 }
 
 export interface Request {
+  providerOffers: never[];
+  providerConfirmation: unknown;
   state: string;
   customerName: string;
   customerAddress: string;

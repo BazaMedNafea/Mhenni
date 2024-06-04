@@ -15,6 +15,7 @@ import WelcomePage from "./pages/WelcomePage";
 import OrderStatusPage from "./pages/OrderStatusPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import ManageRequestCustomer from "./pages/ManageRequestCustomer";
+import AboutUs from "./pages/AboutUs";
 
 const AppRoutes = () => {
   return (
@@ -48,6 +49,9 @@ const AppRoutes = () => {
           </Layout>
         }
       />
+
+      <Route path="/about-us" element={<AboutUs />} />
+
       {/* Route for OrderStatusPage */}
       <Route
         path="/orders/:orderId"

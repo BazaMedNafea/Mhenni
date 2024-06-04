@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -134,7 +134,12 @@ export const useGetMyCustomerRequests = () => {
     fetchMyCustomerRequests();
   }, []);
 
-  return { customerRequests, isLoading, error };
+  return {
+    customerRequests,
+    isLoading,
+    error,
+    refetch: fetchMyCustomerRequests,
+  };
 };
 
 export const useGetMyCustomerRequestById = (requestId: number) => {
@@ -224,6 +229,7 @@ export const useGetProviderOffersForRequest = (requestId: number) => {
 // MyCustomerApi.tsx
 export const useUpdateRequestStatus = () => {
   const { getAccessTokenSilently } = useAuth0();
+  const queryClient = useQueryClient();
 
   const updateRequestStatus = async ({
     requestId,
@@ -234,7 +240,6 @@ export const useUpdateRequestStatus = () => {
   }): Promise<void> => {
     try {
       const accessToken = await getAccessTokenSilently();
-
       const response = await fetch(
         `${API_BASE_URL}api/my/customer/requests/${requestId}/update-status`,
         {
@@ -257,8 +262,102 @@ export const useUpdateRequestStatus = () => {
     }
   };
 
-  const { mutate, isLoading, isError, error } =
-    useMutation(updateRequestStatus);
+  const { mutate, isLoading, isError, error } = useMutation(
+    updateRequestStatus,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("customerRequests");
+        toast.success("Request status updated successfully!");
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to update request status.");
+      },
+    }
+  );
 
   return { updateRequestStatus: mutate, isLoading, isError, error };
+};
+
+export const useConfirmRequestCompletion = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const confirmRequestCompletion = async (requestId: number): Promise<void> => {
+    try {
+      const accessToken = await getAccessTokenSilently();
+
+      const response = await fetch(
+        `${API_BASE_URL}api/my/customer/requests/${requestId}/complete`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || "Failed to confirm request completion");
+      }
+    } catch (error: unknown) {
+      console.error("Error confirming request completion:", error);
+      throw error;
+    }
+  };
+
+  const { mutate, isLoading, isError, error } = useMutation(
+    confirmRequestCompletion
+  );
+
+  return { confirmRequestCompletion: mutate, isLoading, isError, error };
+};
+
+interface ReviewData {
+  providerId: string;
+  requestId: number;
+  punctualityRating: number;
+  proficiencyRating: number;
+  etiquettesRating: number;
+  communicationRating: number;
+  priceRating: number;
+  overallRating: number;
+  comment?: string;
+}
+
+export const useAddReview = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const addReview = async (reviewData: ReviewData): Promise<void> => {
+    try {
+      const accessToken = await getAccessTokenSilently();
+      const response = await fetch(
+        `${API_BASE_URL}api/my/customer/requests/${reviewData.requestId}/reviews/add`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reviewData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || "Failed to add review");
+      }
+
+      const newReview = await response.json();
+      console.log("New review added:", newReview);
+    } catch (error: unknown) {
+      console.error("Error adding review:", error);
+      toast.error((error as Error).toString());
+      throw error;
+    }
+  };
+
+  const { mutate, isLoading, isError, error } = useMutation(addReview);
+
+  return { addReview: mutate, isLoading, isError, error };
 };

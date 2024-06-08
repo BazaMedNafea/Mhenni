@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { SelectedPage } from "@/types/selectepage";
 import HText from "@/components/Htext";
 
-
 type Props = {
   setSelectedPage: (value: SelectedPage) => void;
 };
@@ -44,17 +43,37 @@ const ContactUs = ({ setSelectedPage }: Props) => {
           }}
         >
           <HText>
-            <span className="text-[#F3CF00]">JOIN NOW</span> TO ask  bla bla 
+            <span className="text-[#F3CF00] ">JOIN NOW</span> TO GET HELP
           </HText>
-          <p className="my-5">
-            Congue adipiscing risus commodo placerat. Tellus et in feugiat nisl
-            sapien vel rhoncus. Placerat at in enim pellentesque. Nulla
-            adipiscing leo egestas nisi elit risus sit. Nunc cursus sagittis.
+          <p className="my-5 text-xl">
+            At Mhenni, we are here to address all your questions and concerns.
+            Feel free to contact us for assistance or additional information.
           </p>
         </motion.div>
 
         {/* FORM AND IMAGE */}
         <div className="mt-10 justify-between gap-8 md:flex">
+          <motion.div
+            className="relative mt-16 basis-2/5 md:mt-0"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            variants={{
+              hidden: { opacity: 0, y: 50 },
+              visible: { opacity: 1, y: 0 },
+            }}
+          >
+            <div className="w-full">
+              <img
+                className="w-full"
+                alt="contact-us-page-graphic"
+                src="https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              />
+            </div>
+
+          </motion.div>
+
           <motion.div
             className="mt-10 basis-3/5 md:mt-0"
             initial="hidden"
@@ -85,13 +104,13 @@ const ContactUs = ({ setSelectedPage }: Props) => {
                 <p className="mt-1 text-primary-500">
                   {errors.name.type === "required" && "This field is required."}
                   {errors.name.type === "maxLength" &&
-                    "Max length is 100 char."}
+                    "Max length is 100 characters."}
                 </p>
               )}
 
               <input
                 className={inputStyles}
-                type="text"
+                type="email"
                 placeholder="EMAIL"
                 {...register("email", {
                   required: true,
@@ -100,8 +119,7 @@ const ContactUs = ({ setSelectedPage }: Props) => {
               />
               {errors.email && (
                 <p className="mt-1 text-primary-500">
-                  {errors.email.type === "required" &&
-                    "This field is required."}
+                  {errors.email.type === "required" && "This field is required."}
                   {errors.email.type === "pattern" && "Invalid email address."}
                 </p>
               )}
@@ -118,40 +136,19 @@ const ContactUs = ({ setSelectedPage }: Props) => {
               />
               {errors.message && (
                 <p className="mt-1 text-primary-500">
-                  {errors.message.type === "required" &&
-                    "This field is required."}
+                  {errors.message.type === "required" && "This field is required."}
                   {errors.message.type === "maxLength" &&
-                    "Max length is 2000 char."}
+                    "Max length is 2000 characters."}
                 </p>
               )}
 
               <button
                 type="submit"
-                className="mt-5 rounded-lg  px-20 py-3 transition duration-500 bg-yellow-300 text-black hover:bg-[#222831] hover:text-yellow-300" 
+                className="mt-5 rounded-lg px-20 py-3 transition duration-500 bg-yellow-300 text-black hover:bg-[#222831] hover:text-yellow-300"
               >
                 SUBMIT
               </button>
             </form>
-          </motion.div>
-
-          <motion.div
-            className="relative mt-16 basis-2/5 md:mt-0"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            variants={{
-              hidden: { opacity: 0, y: 50 },
-              visible: { opacity: 1, y: 0 },
-            }}
-          >
-            <div className="w-full before:absolute before:-bottom-20 before:-right-10 before:z-[-1] md:before:content-evolvetext">
-              <img
-                className="w-full"
-                alt="contact-us-page-graphic"
-                src="https://img.freepik.com/free-vector/flat-design-call-center-concept_23-2148197509.jpg?t=st=1713015425~exp=1713019025~hmac=5732b646fd00a169abf1395c932d8dccc9b4aa0d05201bc6966e9e8ab9b6ef87&w=360"
-              />
-            </div>
           </motion.div>
         </div>
       </motion.div>

@@ -194,23 +194,19 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
                           </p>
                           <button
                             className={`mt-2 px-4 py-2 text-sm rounded ${
-                              selectedDate === offer.offerDate &&
-                              selectedTime === offer.offerTime
+                              selectedDate === offer.offerDate.split("T")[0] &&
+                              selectedTime === offer.offerTime.split("T")[1]
                                 ? "bg-blue-500 text-white"
                                 : "bg-gray-200 text-gray-700"
                             }`}
                             onClick={() => {
                               setSelectedDate(offer.offerDate.split("T")[0]);
-                              setSelectedTime(
-                                new Date(offer.offerTime)
-                                  .toISOString()
-                                  .split("T")[1]
-                              );
+                              setSelectedTime(offer.offerTime.split("T")[1]);
                             }}
                             disabled={state.toLowerCase() !== "offered"}
                           >
-                            {selectedDate === offer.offerDate &&
-                            selectedTime === offer.offerTime
+                            {selectedDate === offer.offerDate.split("T")[0] &&
+                            selectedTime === offer.offerTime.split("T")[1]
                               ? "Selected"
                               : "Select Date"}
                           </button>

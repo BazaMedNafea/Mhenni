@@ -220,7 +220,7 @@ const SearchPage = () => {
         <SearchBar
           searchQuery={searchState.searchQuery}
           onSubmit={setSearchQuery}
-          placeHolder='Search by Cuisine or Service Name'
+          placeHolder='Search by Service Name'
           onReset={resetSearch}
           wilayaOptions={wilayaOptions}
           className='search-bar-black'

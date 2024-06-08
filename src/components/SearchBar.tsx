@@ -39,26 +39,24 @@ const SearchBar = ({
   className,
   wilayaSelectClassName,
 }: Props) => {
-  const [selectedWilaya, setSelectedWilaya] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedWilaya, setSelectedWilaya] = useState<string>("");
 
   const form = useForm<SearchForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       searchQuery,
-      selectedWilaya: undefined,
+      selectedWilaya: "",
     },
   });
 
   useEffect(() => {
-    form.reset({ searchQuery, selectedWilaya: undefined });
+    form.reset({ searchQuery, selectedWilaya: "" });
   }, [form, searchQuery]);
 
   const handleReset = () => {
     form.reset({
       searchQuery: "",
-      selectedWilaya: undefined,
+      selectedWilaya: "",
     });
 
     if (onReset) {
@@ -78,31 +76,36 @@ const SearchBar = ({
   return (
     <form
       onSubmit={form.handleSubmit(handleSubmit)}
-      className={`flex items-center gap-3 justify-between flex-row border-2 rounded-full p-3 backdrop-blur-md bg-white/30 ${
+      className={`flex items-center gap-3 justify-between flex-row border-2 rounded-full p-3 bg-white/70 ${
         form.formState.errors.searchQuery && "border-red-500"
       }`}
     >
       <Search
         strokeWidth={2.5}
         size={30}
-        className={`ml-1 hidden md:block text-white ${className}`}
+        className={`ml-1 hidden md:block text-black ${className}`}
       />
       <Input
         {...form.register("searchQuery")}
-        className={`border-none shadow-none text-xl focus-visible:ring-0 placeholder:text-gray-200 text-white bg-transparent flex-1 ${className}`}
+        className={`border-none shadow-none text-xl focus-visible:ring-0 placeholder:text-gray-500 text-black bg-transparent flex-1 ${className} ${
+          window.innerWidth < 768 ? "w-full" : "w-96"
+        }`} // Adjusted width based on screen size
         placeholder={placeHolder}
       />
 
       <div className='flex items-center gap-2'>
         <Select value={selectedWilaya} onValueChange={handleWilayaChange}>
           <SelectTrigger
-            className={`px-3 py-2 text-xl bg-transparent border-none text-white ${wilayaSelectClassName}`}
+            className={`px-3 py-2 text-xl bg-transparent border-none text-black ${wilayaSelectClassName}`}
           >
-            <SelectValue className='text-xl' placeholder='Select wilaya' />
+            <SelectValue
+              className='text-xl text-black'
+              placeholder='Select wilaya'
+            />
           </SelectTrigger>
           <SelectContent>
             {wilayaOptions.map((wilaya) => (
-              <SelectItem key={wilaya} value={wilaya}>
+              <SelectItem key={wilaya} value={wilaya} className='text-black'>
                 {wilaya}
               </SelectItem>
             ))}
@@ -114,7 +117,7 @@ const SearchBar = ({
         onClick={handleReset}
         type='button'
         variant='outline'
-        className='rounded-full border-none text-black hover:bg-white/10'
+        className='rounded-full border-none text-black hover:bg-white/50'
       >
         Reset
       </Button>

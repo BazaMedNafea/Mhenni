@@ -23,6 +23,7 @@ const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   image: z.string().optional(),
+  bio: z.string().optional(), // Add this line
   addresses: z
     .array(
       z.object({
@@ -91,9 +92,11 @@ const UserProfileForm = ({
     firstName: currentUser.firstName || "",
     lastName: currentUser.lastName || "",
     profilePicture: currentUser.image || "",
+    bio: currentUser.bio || "", // Add this line
     addresses:
       currentUser.customer?.addresses || currentUser.provider?.addresses || [],
   };
+
   if (flattenedUser.addresses.length === 0) {
     flattenedUser.addresses.push({
       street: "",
@@ -115,11 +118,11 @@ const UserProfileForm = ({
   }, [currentUser, form]);
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-lg max-w-3xl mx-auto mt-10">
+    <div className='p-6 bg-white shadow-md rounded-lg max-w-3xl mx-auto mt-10'>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSave)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSave)} className='space-y-6'>
           <div>
-            <h2 className="text-3xl font-semibold text-gray-800 mb-2">
+            <h2 className='text-3xl font-semibold text-gray-800 mb-2'>
               {title}
             </h2>
             <FormDescription>
@@ -127,18 +130,18 @@ const UserProfileForm = ({
             </FormDescription>
           </div>
 
-          <div className="flex flex-col items-center mb-6">
+          <div className='flex flex-col items-center mb-6'>
             <img
               src={profilePicture}
-              alt="Profile"
-              className="w-32 h-32 rounded-full object-cover shadow-lg cursor-pointer"
+              alt='Profile'
+              className='w-32 h-32 rounded-full object-cover shadow-lg cursor-pointer'
               onClick={handleProfilePictureClick}
             />
             <input
-              type="file"
+              type='file'
               ref={fileInputRef}
-              accept="image/*"
-              className="hidden"
+              accept='image/*'
+              className='hidden'
               onChange={handleProfilePictureChange}
             />
             {isUploading && <p>Uploading...</p>}
@@ -146,7 +149,7 @@ const UserProfileForm = ({
 
           <FormField
             control={form.control}
-            name="email"
+            name='email'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -154,7 +157,7 @@ const UserProfileForm = ({
                   <Input
                     {...field}
                     disabled
-                    className="bg-gray-100 border-gray-300"
+                    className='bg-gray-100 border-gray-300'
                   />
                 </FormControl>
               </FormItem>
@@ -162,12 +165,12 @@ const UserProfileForm = ({
           />
           <FormField
             control={form.control}
-            name="firstName"
+            name='firstName'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input {...field} className="bg-gray-100 border-gray-300" />
+                  <Input {...field} className='bg-gray-100 border-gray-300' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -175,35 +178,51 @@ const UserProfileForm = ({
           />
           <FormField
             control={form.control}
-            name="lastName"
+            name='lastName'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input {...field} className="bg-gray-100 border-gray-300" />
+                  <Input {...field} className='bg-gray-100 border-gray-300' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name='bio'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bio</FormLabel>
+                <FormControl>
+                  <textarea
+                    {...field}
+                    placeholder='Enter description'
+                    className='h-32 resize-y w-full border rounded-md p-2'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className='space-y-6'>
             {flattenedUser.addresses.map((_address, index) => (
-              <div key={index} className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-700">
+              <div key={index} className='space-y-4'>
+                <h3 className='text-xl font-semibold text-gray-700'>
                   Address {index + 1}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   <FormField
                     control={form.control}
                     name={`addresses.${index}.street`}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className='flex-1'>
                         <FormLabel>Street</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-gray-100 border-gray-300"
+                            className='bg-gray-100 border-gray-300'
                           />
                         </FormControl>
                         <FormMessage />
@@ -214,12 +233,12 @@ const UserProfileForm = ({
                     control={form.control}
                     name={`addresses.${index}.city`}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className='flex-1'>
                         <FormLabel>City</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-gray-100 border-gray-300"
+                            className='bg-gray-100 border-gray-300'
                           />
                         </FormControl>
                         <FormMessage />
@@ -230,12 +249,12 @@ const UserProfileForm = ({
                     control={form.control}
                     name={`addresses.${index}.wilaya`}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className='flex-1'>
                         <FormLabel>Wilaya</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-gray-100 border-gray-300"
+                            className='bg-gray-100 border-gray-300'
                           />
                         </FormControl>
                         <FormMessage />
@@ -246,12 +265,12 @@ const UserProfileForm = ({
                     control={form.control}
                     name={`addresses.${index}.zip`}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className='flex-1'>
                         <FormLabel>Zip</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            className="bg-gray-100 border-gray-300"
+                            className='bg-gray-100 border-gray-300'
                           />
                         </FormControl>
                         <FormMessage />
@@ -267,8 +286,8 @@ const UserProfileForm = ({
             <LoadingButton />
           ) : (
             <Button
-              type="submit"
-              className="w-full py-2 bg-orange-500 text-white rounded-lg shadow hover:bg-orange-600"
+              type='submit'
+              className='w-full py-2 bg-orange-500 text-white rounded-lg shadow hover:bg-orange-600'
             >
               {buttonText}
             </Button>

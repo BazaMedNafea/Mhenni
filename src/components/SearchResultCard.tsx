@@ -22,6 +22,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     navigate(`/service-details/${serviceProviderMap.id}`);
   };
 
+  // Log the serviceProviderMap object to inspect its structure
+  console.log(serviceProviderMap);
+
   return (
     <Card className='w-full bg-white shadow-md rounded-lg overflow-hidden transform transition-all hover:scale-105'>
       <div className='grid grid-cols-1 md:grid-cols-5 gap-4'>
@@ -51,7 +54,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           </div>
           <div className='flex items-center mt-2'>
             <Avatar
-              img='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
+              img={provider.user.image} // Using a default image as the provider object doesn't have an image URL
               rounded={true}
             />
             <div className='ml-3'>
@@ -75,15 +78,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           </div>
           <div className='text-gray-500 dark:text-gray-400 mt-2'>
             <p className='text-sm'>
-              Rate: ${serviceProviderMap.billing_rate_per_hour} per hour
-            </p>
-            <p className='text-sm'>
               Experience: {serviceProviderMap.experience_in_months} months
             </p>
           </div>
           <div className='flex items-center justify-between mt-3'>
             <span className='text-2xl font-bold text-gray-900 dark:text-white'>
-              ${serviceProviderMap.billing_rate_per_hour * 10}{" "}
+              {serviceProviderMap.billing_rate_per_hour} DZD{" "}
               {/* Example pricing calculation */}
             </span>
           </div>

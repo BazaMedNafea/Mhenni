@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 export interface User {
+  bio: string;
   auth0Id?: string;
   email: string;
   firstName?: string;
@@ -61,17 +62,17 @@ export interface Category {
 }
 
 export interface Service {
-  provider: any;
+  provider: Provider; // Update the type here
   service_image_url: string | undefined;
   estimatedDeliveryTime: ReactNode;
   id: number;
   service_name: string;
   service_category_id: number;
   service_category: Category;
+
   service_providers: ServiceProviderMap[];
   Request: Request[];
 }
-
 export interface ServiceProviderMap {
   image: string | undefined;
   id: number;
@@ -201,9 +202,14 @@ export type SearchState = {
 };
 
 export type categoriestype = {
-  name: any;
-  description: string | undefined;
+  name: string;
+  description?: string;
   image: string;
+  icon: ReactNode;
+  services: Array<{
+    name: string;
+    image: string;
+  }>;
 };
 
 export type ServiceData = {

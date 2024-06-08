@@ -30,15 +30,16 @@ const formSchema = z.object({
     )
     .optional()
     .default([]),
+  description: z.string().optional(),
 });
 
 export type UserFormData = z.infer<typeof formSchema>;
 
 type Props = {
   currentUser: {
+    email?: string;
     firstName?: string;
     lastName?: string;
-    email?: string;
   };
   addresses: {
     street: string;
@@ -46,7 +47,7 @@ type Props = {
     wilaya: string;
     zip: string;
   }[];
-  onSave: (userProfileData: UserFormData) => void;
+  onSave: (userProfileData: UserFormData, requirementDesc: string) => void;
   isLoading: boolean;
   title?: string;
   buttonText?: string;
@@ -116,6 +117,7 @@ const ConfirmRequestDetails = ({
     firstName: currentUser.firstName || "",
     lastName: currentUser.lastName || "",
     addresses: addresses || [],
+    description: "",
   };
 
   if (flattenedUser.addresses.length === 0) {
@@ -139,52 +141,82 @@ const ConfirmRequestDetails = ({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSave)}
-        className="space-y-4 bg-gray-50 rounded-lg md:p-10"
+        onSubmit={form.handleSubmit((data) =>
+          onSave({ ...data }, data.description || "")
+        )}
+        className='space-y-6 bg-white rounded-lg shadow-md p-8'
       >
         <div>
-          <h2 className="text-2xl font-bold">{title}</h2>
+          <h2 className='text-3xl font-semibold text-gray-700'>{title}</h2>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='text-gray-600'>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    disabled
+                    className='bg-gray-50 border border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:ring focus:ring-blue-200'
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='firstName'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='text-gray-600'>First Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className='bg-gray-50 border border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:ring focus:ring-blue-200'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='lastName'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='text-gray-600'>Last Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className='bg-gray-50 border border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:ring focus:ring-blue-200'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <FormField
           control={form.control}
-          name="email"
+          name='description'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className='text-gray-600'>Description</FormLabel>
               <FormControl>
-                <Input {...field} disabled className="bg-white" />
+                <textarea
+                  {...field}
+                  placeholder='Enter description'
+                  className='h-32 resize-y w-full border border-gray-300 rounded-lg p-3 focus:border-blue-500 focus:ring focus:ring-blue-200'
+                />
               </FormControl>
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="firstName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input {...field} className="bg-white" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className='flex flex-col md:flex-row gap-4'>
           {flattenedUser.addresses?.map(
             (
               _address: {
@@ -200,10 +232,10 @@ const ConfirmRequestDetails = ({
                   control={form.control}
                   name={`addresses.${index}.street`}
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>Street</FormLabel>
                       <FormControl>
-                        <Input {...field} className="bg-white" />
+                        <Input {...field} className='bg-white' />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -213,10 +245,10 @@ const ConfirmRequestDetails = ({
                   control={form.control}
                   name={`addresses.${index}.city`}
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>City</FormLabel>
                       <FormControl>
-                        <Input {...field} className="bg-white" />
+                        <Input {...field} className='bg-white' />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -226,12 +258,12 @@ const ConfirmRequestDetails = ({
                   control={form.control}
                   name={`addresses.${index}.wilaya`}
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>Wilaya</FormLabel>
                       <FormControl>
                         <select
                           {...field}
-                          className="bg-white border border-gray-300 rounded-lg p-2"
+                          className='bg-white border border-gray-300 rounded-lg p-2'
                         >
                           {wilayaOptions.map((option) => (
                             <option key={option} value={option}>
@@ -248,10 +280,10 @@ const ConfirmRequestDetails = ({
                   control={form.control}
                   name={`addresses.${index}.zip`}
                   render={({ field }) => (
-                    <FormItem className="flex-1">
+                    <FormItem className='flex-1'>
                       <FormLabel>Zip</FormLabel>
                       <FormControl>
-                        <Input {...field} className="bg-white" />
+                        <Input {...field} className='bg-white' />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -264,7 +296,7 @@ const ConfirmRequestDetails = ({
         {isLoading ? (
           <LoadingButton />
         ) : (
-          <Button type="submit" className="bg-orange-500">
+          <Button type='submit' className='bg-orange-500'>
             {buttonText}
           </Button>
         )}

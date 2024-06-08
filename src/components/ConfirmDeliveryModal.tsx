@@ -35,7 +35,8 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
   const navigate = useNavigate();
 
   const handleSaveDeliveryDetails = async (userProfileData: any) => {
-    const { email, firstName, lastName, addresses } = userProfileData;
+    const { email, firstName, lastName, addresses, description } =
+      userProfileData;
 
     if (
       !email ||
@@ -58,7 +59,7 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
     const serviceRequests = selectedServices.map((service) => ({
       id: service.id,
       serviceId: service.service.id,
-      requirementDesc: "REQUIREMENT_DESCRIPTION_PLACEHOLDER",
+      requirementDesc: description, // Use the description value here
       providerId: providerId,
       customAddress: {
         street: address.street,
@@ -92,10 +93,10 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
       {showDeliveryDetails && (
         <>
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            className='fixed inset-0 bg-black bg-opacity-50 z-40'
             onClick={handleClose}
           ></div>
-          <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className='fixed inset-0 flex items-center justify-center z-50'>
             <div
               className={`bg-white rounded-lg p-6 max-w-2xl mx-auto relative confirm-delivery-details ${
                 showDeliveryDetails ? "show" : ""
@@ -103,12 +104,12 @@ const ConfirmDeliveryModal: React.FC<ConfirmDeliveryModalProps> = ({
             >
               <button
                 onClick={handleClose}
-                className="absolute top-0 right-0 m-4"
+                className='absolute top-0 right-0 m-4'
               >
                 X
               </button>
-              <div className="max-h-[80vh] overflow-y-auto">
-                <div className="mb-4">
+              <div className='max-h-[80vh] overflow-y-auto'>
+                <div className='mb-4'>
                   <ConfirmRequestDetails
                     currentUser={{
                       firstName: currentUser?.firstName,

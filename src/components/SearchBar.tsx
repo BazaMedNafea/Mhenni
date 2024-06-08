@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   searchQuery: z.string().nonempty("Search query is required"),
-  selectedWilaya: z.string().nonempty("Wilaya selection is required"),
+  selectedWilaya: z.string().optional(),
 });
 
 export type SearchForm = z.infer<typeof formSchema>;
@@ -39,24 +39,26 @@ const SearchBar = ({
   className,
   wilayaSelectClassName,
 }: Props) => {
-  const [selectedWilaya, setSelectedWilaya] = useState<string>("");
+  const [selectedWilaya, setSelectedWilaya] = useState<string | undefined>(
+    undefined
+  );
 
   const form = useForm<SearchForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       searchQuery,
-      selectedWilaya: "",
+      selectedWilaya: undefined,
     },
   });
 
   useEffect(() => {
-    form.reset({ searchQuery, selectedWilaya: "" });
+    form.reset({ searchQuery, selectedWilaya: undefined });
   }, [form, searchQuery]);
 
   const handleReset = () => {
     form.reset({
       searchQuery: "",
-      selectedWilaya: "",
+      selectedWilaya: undefined,
     });
 
     if (onReset) {

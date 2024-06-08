@@ -102,84 +102,89 @@ const ManageRequestProvider = () => {
       return <div>No requests found.</div>;
     }
 
-    return requests.map((request) => (
-      <ProviderRequestCard
-        key={request.id}
-        requestId={request.id}
-        customerName={getCustomerName(request)}
-        customerAddress={getCustomerAddress(request)}
-        serviceName={request.service.service_name}
-        requestDescription={
-          request.requirement_desc || "No description provided"
-        }
-        expectedStartTime={request.expected_start_time}
-        customerProfileImage={request.customer.user.image}
-        state={request.state}
-        providerConfirmation={false}
-        onAccept={() => handleOfferCreated(request.id)}
-        onReject={() => handleReject(request.id)}
-      />
-    ));
+    return requests.map((request) => {
+      const serviceName =
+        request.Service?.service_name || "Service not specified";
+
+      return (
+        <ProviderRequestCard
+          key={request.id}
+          requestId={request.id}
+          customerName={getCustomerName(request)}
+          customerAddress={getCustomerAddress(request)}
+          serviceName={serviceName}
+          requestDescription={
+            request.requirement_desc || "No description provided"
+          }
+          expectedStartTime={request.expected_start_time}
+          customerProfileImage={request.customer.user.image}
+          state={request.state}
+          providerConfirmation={false}
+          onAccept={() => handleOfferCreated(request.id)}
+          onReject={() => handleReject(request.id)}
+        />
+      );
+    });
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className='flex flex-col h-full'>
       <Tabs
         value={selectedTab}
         onValueChange={handleTabSelect}
-        className="flex-grow"
+        className='flex-grow'
       >
-        <TabsList className="flex justify-between">
+        <TabsList className='flex justify-between'>
           <TabsTrigger
-            value="orders"
-            className="flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200"
+            value='orders'
+            className='flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200'
           >
             Orders
           </TabsTrigger>
           <TabsTrigger
-            value="offered"
-            className="flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200"
+            value='offered'
+            className='flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200'
           >
             Offered
           </TabsTrigger>
           <TabsTrigger
-            value="ongoing"
-            className="flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200"
+            value='ongoing'
+            className='flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200'
           >
             On Going
           </TabsTrigger>
           <TabsTrigger
-            value="completed"
-            className="flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200"
+            value='completed'
+            className='flex-1 flex items-center justify-center px-4 py-2 hover:bg-gray-200 transition-colors duration-200'
           >
             Completed
           </TabsTrigger>
         </TabsList>
 
         <TabsContent
-          value="orders"
-          className="h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto"
+          value='orders'
+          className='h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto'
         >
           {renderTabContent(requestsByState.REQUESTED)}
         </TabsContent>
 
         <TabsContent
-          value="offered"
-          className="h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto"
+          value='offered'
+          className='h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto'
         >
           {renderTabContent(requestsByState.OFFERED)}
         </TabsContent>
 
         <TabsContent
-          value="ongoing"
-          className="h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto"
+          value='ongoing'
+          className='h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto'
         >
           {renderTabContent(requestsByState.ONGOING)}
         </TabsContent>
 
         <TabsContent
-          value="completed"
-          className="h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto"
+          value='completed'
+          className='h-full bg-gray-50 p-10 rounded-lg w-full overflow-auto'
         >
           {renderTabContent(requestsByState.COMPLETED)}
         </TabsContent>

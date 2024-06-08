@@ -1,16 +1,17 @@
 import { useCreateMyUser, useGetMyUser } from "@/api/MyUserApi";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import WelcomePage from "./WelcomePage";
 
 const AuthCallbackPage = () => {
-  const navigate = useNavigate();
+  const navigate: NavigateFunction = useNavigate();
   const { user, isAuthenticated } = useAuth0();
   const { createUser } = useCreateMyUser();
   const { currentUser } = useGetMyUser();
   const hasCreatedCustomer = useRef(false);
   const returnTo = localStorage.getItem("returnTo") || "/";
+  console.log("returnTo value:", returnTo); // Added console log
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -29,28 +30,31 @@ const AuthCallbackPage = () => {
           });
           hasCreatedCustomer.current = true;
         }
-
-        if (currentUser) {
-          console.log("Current user data:", currentUser);
-          if (currentUser.customer || currentUser.provider === null) {
-            console.log("User type is null, navigating to choose-type page.");
-            navigate("/choose-type");
-          } else {
-            console.log("User type is not null, navigating to previous page.");
-            navigate(returnTo); // Redirect to the returnTo path from local storage
-          }
-        } else {
-          console.log("Current user data is not available.");
-        }
       } else {
         console.log("User is not authenticated.");
         // Handle the case when the user is not authenticated
         // Navigate to login page or show error message
       }
     };
-
     handleCallback();
-  }, [createUser, currentUser, navigate, user, isAuthenticated, returnTo]);
+  }, [createUser, user, isAuthenticated]);
+
+  useEffect(() => {
+    if (currentUser) {
+      console.log("Current user data:", currentUser);
+      if (currentUser.customer || currentUser.provider) {
+        // User is already registered as a customer or provider
+        setTimeout(() => {
+          navigate(returnTo);
+        }, 0);
+      } else {
+        console.log("User type is null, navigating to choose-type page.");
+        navigate("/choose-type");
+      }
+    } else {
+      console.log("Current user data is not available.");
+    }
+  }, [currentUser, navigate, returnTo]);
 
   return (
     <>

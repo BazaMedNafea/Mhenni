@@ -37,8 +37,8 @@ interface CustomerRequestCardProps {
   state: string;
   providerOffers: ProviderOffer[];
   refreshCustomerRequests: () => void;
-  onAccept?: () => void;
-  onReject?: () => void;
+  onAccept: (requestId: number, offerDate: string, offerTime: string) => void;
+  onReject: () => void;
   isLoading: boolean;
   showReviewForm: boolean;
   setShowReviewForm: (show: boolean) => void;
@@ -58,6 +58,7 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
   setShowReviewForm,
 }) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const {
     customerRequest,
@@ -88,20 +89,18 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
   };
 
   useEffect(() => {
-    Modal.setAppElement("body"); // Set the app element here
+    Modal.setAppElement("body");
   }, []);
 
   const handleConfirmDate = async () => {
-    if (selectedDate) {
+    if (selectedDate && selectedTime) {
       try {
         await updateRequestStatus({
           requestId,
-          expectedStartTime: selectedDate,
+          expectedStartTime: `${selectedDate}T${selectedTime}`,
         });
 
-        if (onAccept) {
-          onAccept();
-        }
+        onAccept(requestId, selectedDate, selectedTime);
       } catch (error) {
         console.error("Error updating request status:", error);
       }
@@ -130,10 +129,7 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
       };
       await addReview(reviewData);
 
-      // Move the request to "COMPLETED" tab after review is submitted
-      if (onReject) {
-        onReject();
-      }
+      onReject();
 
       refreshCustomerRequests();
       setShowReviewForm(false);
@@ -144,11 +140,11 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
 
   const renderDetails = () => {
     if (isFetching) {
-      return <div className="text-gray-700">Loading...</div>;
+      return <div className='text-gray-700'>Loading...</div>;
     }
     if (error) {
       return (
-        <div className="text-red-500">
+        <div className='text-red-500'>
           Error: {(error as Error)?.message || "An error occurred"}
         </div>
       );
@@ -156,56 +152,65 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
     if (customerRequest) {
       return (
         <div>
-          <p className="text-gray-700">
+          <p className='text-gray-700'>
             <strong>Provider:</strong>{" "}
             {customerRequest.provider?.user?.firstName}{" "}
             {customerRequest.provider?.user?.lastName || ""}
           </p>
           {customerRequest.deliveryOffer && (
-            <div className="mt-2">
-              <h3 className="text-lg font-semibold">Delivery Offer</h3>
-              <p className="text-gray-700">
+            <div className='mt-2'>
+              <h3 className='text-lg font-semibold'>Delivery Offer</h3>
+              <p className='text-gray-700'>
                 <strong>Discount:</strong>{" "}
                 {customerRequest.deliveryOffer.discount_in_percentage}%
               </p>
-              <p className="text-gray-700">
+              <p className='text-gray-700'>
                 <strong>Offer Accepted:</strong>{" "}
                 {customerRequest.deliveryOffer.is_offer_accepted ? "Yes" : "No"}
               </p>
             </div>
           )}
           {providerOffers.length > 0 && state.toLowerCase() === "offered" && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold">Provider Offers</h3>
-              <ul className="divide-y divide-gray-200">
+            <div className='mt-4'>
+              <h3 className='text-lg font-semibold'>Provider Offers</h3>
+              <ul className='divide-y divide-gray-200'>
                 {providerOffers.map((offer) => (
-                  <li key={offer.id} className="py-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                        <div className="ml-4">
-                          <p className="text-gray-800 font-semibold">
+                  <li key={offer.id} className='py-4'>
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center'>
+                        <div className='w-12 h-12 rounded-full bg-gray-200'></div>
+                        <div className='ml-4'>
+                          <p className='text-gray-800 font-semibold'>
                             {offer.provider?.user?.firstName}{" "}
                             {offer.provider?.user?.lastName}
                           </p>
-                          <p className="text-gray-600">
+                          <p className='text-gray-600'>
                             Offer Date:{" "}
                             {new Date(offer.offerDate).toLocaleDateString()}
                           </p>
-                          <p className="text-gray-600">
+                          <p className='text-gray-600'>
                             Offer Time:{" "}
                             {new Date(offer.offerTime).toLocaleTimeString()}
                           </p>
                           <button
                             className={`mt-2 px-4 py-2 text-sm rounded ${
-                              selectedDate === offer.offerTime
+                              selectedDate === offer.offerDate &&
+                              selectedTime === offer.offerTime
                                 ? "bg-blue-500 text-white"
                                 : "bg-gray-200 text-gray-700"
                             }`}
-                            onClick={() => setSelectedDate(offer.offerTime)}
+                            onClick={() => {
+                              setSelectedDate(offer.offerDate.split("T")[0]);
+                              setSelectedTime(
+                                new Date(offer.offerTime)
+                                  .toISOString()
+                                  .split("T")[1]
+                              );
+                            }}
                             disabled={state.toLowerCase() !== "offered"}
                           >
-                            {selectedDate === offer.offerTime
+                            {selectedDate === offer.offerDate &&
+                            selectedTime === offer.offerTime
                               ? "Selected"
                               : "Select Date"}
                           </button>
@@ -215,9 +220,9 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
                   </li>
                 ))}
               </ul>
-              {selectedDate && (
+              {selectedDate && selectedTime && (
                 <button
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+                  className='mt-4 px-4 py-2 bg-blue-500 text-white rounded'
                   onClick={handleConfirmDate}
                   disabled={isUpdating}
                 >
@@ -232,25 +237,34 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
     return null;
   };
 
+  const formatDateTime = (dateTime: string) => {
+    const date = new Date(dateTime);
+    if (isNaN(date.getTime())) {
+      return "Expected start time not set";
+    }
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6 max-w-3xl mx-auto">
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">{serviceName}</h2>
-        <p className="text-gray-600">{requestDescription}</p>
+    <div className='bg-white rounded-lg shadow-md p-6 mb-6 max-w-3xl mx-auto'>
+      <div className='mb-4'>
+        <h2 className='text-xl font-semibold text-gray-800'>{serviceName}</h2>
+        <p className='text-gray-600'>{requestDescription}</p>
       </div>
-      <div className="mb-4">
-        <p className="text-gray-700">
-          <strong>Expected Start Time:</strong> {expectedStartTime}
+      <div className='mb-4'>
+        <p className='text-gray-700'>
+          <strong>Expected Start Time:</strong>{" "}
+          {formatDateTime(expectedStartTime)}
         </p>
       </div>
-      <div className="flex justify-between items-center">
+      <div className='flex justify-between items-center'>
         <span className={`text-sm font-semibold ${getStateStyle(state)}`}>
           {state.toUpperCase()}
         </span>
       </div>
-      <div className="mt-4">{renderDetails()}</div>
+      <div className='mt-4'>{renderDetails()}</div>
       {state.toLowerCase() === "ongoing" && (
-        <div className="mt-4">
+        <div className='mt-4'>
           <button
             className={`px-4 py-2 bg-green-500 text-white rounded ml-4 ${
               isConfirming ? "opacity-50 cursor-not-allowed" : ""
@@ -263,7 +277,7 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
         </div>
       )}
       {showReviewForm && (
-        <div className="mt-4">
+        <div className='mt-4'>
           <ReviewAndCommentPage
             onSubmit={handleReviewSubmit}
             isLoading={isAddingReview}
@@ -275,14 +289,14 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
       <Modal
         isOpen={showConfirmModal}
         onRequestClose={() => setShowConfirmModal(false)}
-        contentLabel="Confirm Completion"
-        style={customModalStyles as any} // Override type checking issue
-        ariaHideApp={false} // Disable this to remove the warning related to modal accessibility
+        contentLabel='Confirm Completion'
+        style={customModalStyles as any}
+        ariaHideApp={false}
       >
         <h2>Confirm Completion</h2>
         <p>Are you sure you want to confirm completion request?</p>
         <button
-          className="px-4 py-2 bg-green-500 text-white rounded ml-4"
+          className='px-4 py-2 bg-green-500 text-white rounded ml-4'
           onClick={async () => {
             await confirmRequestCompletion(requestId);
             setShowReviewForm(true);
@@ -293,7 +307,7 @@ const CustomerRequestCard: React.FC<CustomerRequestCardProps> = ({
           {isConfirming ? "Confirming..." : "Confirm"}
         </button>
         <button
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded ml-4"
+          className='px-4 py-2 bg-gray-300 text-gray-700 rounded ml-4'
           onClick={() => setShowConfirmModal(false)}
           disabled={isConfirming}
         >

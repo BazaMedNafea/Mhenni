@@ -73,6 +73,7 @@ export interface Service {
 }
 
 export interface ServiceProviderMap {
+  image: string | undefined;
   id: number;
   service_id: number;
   provider_id: string;
@@ -117,6 +118,7 @@ export interface DeliveryOffer {
 }
 
 export interface Request {
+  Service: any;
   providerOffers: never[];
   providerConfirmation: unknown;
   state: string;
@@ -202,4 +204,12 @@ export type categoriestype = {
   name: any;
   description: string | undefined;
   image: string;
+};
+
+export type ServiceData = {
+  serviceId: string;
+  billingRatePerHour: number;
+  experienceInMonths: number;
+  serviceOfferingDesc: string;
+  serviceImage?: File;
 };

@@ -109,7 +109,6 @@ export default function AboutUs() {
         </motion.div>
       </div>
       <Benefits />
-
       <Footer />
     </div>
   );

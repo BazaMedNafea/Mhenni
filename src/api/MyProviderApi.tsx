@@ -70,6 +70,7 @@ type ServiceData = {
   billingRatePerHour: number;
   experienceInMonths: number;
   serviceOfferingDesc: string;
+  serviceImage?: File; // Note: It's already File | undefined, which is correct
 };
 
 export const useAddServiceForProvider = (
@@ -81,15 +82,34 @@ export const useAddServiceForProvider = (
     async (data: ServiceData) => {
       try {
         const accessToken = await getAccessTokenSilently();
+
+        // Create FormData to send multipart/form-data
+        const formData = new FormData();
+        formData.append("serviceId", data.serviceId);
+        formData.append(
+          "billingRatePerHour",
+          data.billingRatePerHour.toString()
+        );
+        formData.append(
+          "experienceInMonths",
+          data.experienceInMonths.toString()
+        );
+        formData.append("serviceOfferingDesc", data.serviceOfferingDesc);
+
+        // Append the image file if it exists
+        if (data.serviceImage) {
+          formData.append("serviceImage", data.serviceImage);
+        }
+
         const response = await fetch(
           `${API_BASE_URL}api/my/provider/add-service`,
           {
             method: "POST",
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
+              // Don't set 'Content-Type' here; it will be set automatically
             },
-            body: JSON.stringify(data),
+            body: formData,
           }
         );
 

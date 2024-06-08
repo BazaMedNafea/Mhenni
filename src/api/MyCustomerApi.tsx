@@ -44,10 +44,12 @@ export const useAddServiceRequest = () => {
     try {
       if (isAddingRequest) {
         console.log("Service request already in progress, skipping...");
+        toast.info("Service request already in progress, skipping...");
         return [];
       }
 
       setIsAddingRequest(true);
+      toast.info("Adding service request...");
 
       const accessToken = await getAccessTokenSilently();
 
@@ -78,6 +80,7 @@ export const useAddServiceRequest = () => {
       // Assuming the API response contains the id
       const requestIds = responses.map((response) => response.id);
 
+      toast.success("Service request added successfully!");
       return requestIds;
     } catch (error: unknown) {
       console.error("Error adding service requests:", error);
@@ -108,7 +111,6 @@ export const useGetMyCustomerRequests = () => {
     try {
       setIsLoading(true);
       const accessToken = await getAccessTokenSilently();
-
       const response = await fetch(`${API_BASE_URL}api/my/customer/requests`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -125,6 +127,7 @@ export const useGetMyCustomerRequests = () => {
     } catch (error: unknown) {
       setError(error);
       console.error("Error fetching customer requests:", error);
+      toast.error((error as Error).toString());
     } finally {
       setIsLoading(false);
     }
@@ -151,6 +154,7 @@ export const useGetMyCustomerRequestById = (requestId: number) => {
   const fetchMyCustomerRequestById = async () => {
     try {
       setIsLoading(true);
+
       const accessToken = await getAccessTokenSilently();
 
       const response = await fetch(
@@ -172,6 +176,7 @@ export const useGetMyCustomerRequestById = (requestId: number) => {
     } catch (error: unknown) {
       setError(error);
       console.error("Error fetching customer request by ID:", error);
+      toast.error((error as Error).toString());
     } finally {
       setIsLoading(false);
     }
@@ -193,6 +198,7 @@ export const useGetProviderOffersForRequest = (requestId: number) => {
   const fetchProviderOffersForRequest = async () => {
     try {
       setIsLoading(true);
+      toast.info("Fetching provider offers...");
       const accessToken = await getAccessTokenSilently();
 
       const response = await fetch(
@@ -211,9 +217,11 @@ export const useGetProviderOffersForRequest = (requestId: number) => {
 
       const data = await response.json();
       setProviderOffers(data);
+      toast.success("Provider offers fetched successfully!");
     } catch (error: unknown) {
       setError(error);
       console.error("Error fetching provider offers:", error);
+      toast.error((error as Error).toString());
     } finally {
       setIsLoading(false);
     }
@@ -226,7 +234,6 @@ export const useGetProviderOffersForRequest = (requestId: number) => {
   return { providerOffers, isLoading, error };
 };
 
-// MyCustomerApi.tsx
 export const useUpdateRequestStatus = () => {
   const { getAccessTokenSilently } = useAuth0();
   const queryClient = useQueryClient();
@@ -239,6 +246,7 @@ export const useUpdateRequestStatus = () => {
     expectedStartTime: string;
   }): Promise<void> => {
     try {
+      toast.info("Updating request status...");
       const accessToken = await getAccessTokenSilently();
       const response = await fetch(
         `${API_BASE_URL}api/my/customer/requests/${requestId}/update-status`,
@@ -256,8 +264,11 @@ export const useUpdateRequestStatus = () => {
         const errorMessage = await response.text();
         throw new Error(errorMessage || "Failed to update request status");
       }
+
+      toast.success("Request status updated successfully!");
     } catch (error: unknown) {
       console.error("Error updating request status:", error);
+      toast.error((error as Error).toString());
       throw error;
     }
   };
@@ -267,7 +278,6 @@ export const useUpdateRequestStatus = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("customerRequests");
-        toast.success("Request status updated successfully!");
       },
       onError: (error: any) => {
         toast.error(error.message || "Failed to update request status.");
@@ -302,6 +312,7 @@ export const useConfirmRequestCompletion = () => {
       }
     } catch (error: unknown) {
       console.error("Error confirming request completion:", error);
+      toast.error((error as Error).toString());
       throw error;
     }
   };
@@ -350,6 +361,7 @@ export const useAddReview = () => {
 
       const newReview = await response.json();
       console.log("New review added:", newReview);
+      toast.success("Review added successfully!");
     } catch (error: unknown) {
       console.error("Error adding review:", error);
       toast.error((error as Error).toString());

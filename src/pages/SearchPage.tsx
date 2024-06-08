@@ -189,8 +189,8 @@ const SearchPage = () => {
   });
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5 p-4">
-      <div id="cuisines-list" className="mb-5 lg:mb-0">
+    <div className='grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5 p-4'>
+      <div id='cuisines-list' className='mb-5 lg:mb-0'>
         <SearchFilter
           onExpandedClick={() =>
             setIsExpanded((prevIsExpanded) => !prevIsExpanded)
@@ -216,16 +216,16 @@ const SearchPage = () => {
         />
       </div>
 
-      <div id="main-content" className="flex flex-col gap-5">
+      <div id='main-content' className='flex flex-col gap-5'>
         <SearchBar
           searchQuery={searchState.searchQuery}
           onSubmit={setSearchQuery}
-          placeHolder="Search by Cuisine or Service Name"
+          placeHolder='Search by Cuisine or Service Name'
           onReset={resetSearch}
           wilayaOptions={wilayaOptions}
-          className="search-bar-black" // Add a custom class name
+          className='search-bar-black'
         />
-        <div className="flex justify-between flex-col gap-3 lg:flex-row">
+        <div className='flex justify-between flex-col gap-3 lg:flex-row'>
           {searchState.searchQuery && (
             <>
               <SearchResultInfo total={filteredServices.length} city={""} />
@@ -236,7 +236,7 @@ const SearchPage = () => {
             </>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className='flex flex-col gap-6'>
           {loadingPagination || isLoadingServiceProviderMaps ? (
             <LoadingSpinner />
           ) : (

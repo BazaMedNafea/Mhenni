@@ -37,10 +37,10 @@ const FileUpload = ({
 
   return (
     <Input
-      type='file'
-      accept='image/*'
+      type="file"
+      accept="image/*"
       onChange={handleChange}
-      className='mt-2'
+      className="mt-2"
     />
   );
 };
@@ -94,18 +94,18 @@ const AddService = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit, handleInvalidSubmit)}>
-      <div className='bg-white rounded-md shadow-md p-6 mb-4'>
+      <div className="bg-white rounded-md shadow-md p-6 mb-4">
         {/* Existing form fields */}
         <FormField
           control={control}
           name={`services.category`}
           render={({ field }) => (
-            <FormItem className='flex flex-col gap-4 mb-6'>
+            <FormItem className="flex flex-col gap-4 mb-6">
               <FormLabel>Category</FormLabel>
               <FormControl>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Select category' />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories?.map((category) => (
@@ -128,12 +128,12 @@ const AddService = () => {
             control={control}
             name={`services.service`}
             render={({ field }) => (
-              <FormItem className='flex flex-col gap-4 mb-6'>
+              <FormItem className="flex flex-col gap-4 mb-6">
                 <FormLabel>Service</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Select service' />
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select service" />
                     </SelectTrigger>
                     <SelectContent>
                       {categoryServices?.map((service) => (
@@ -156,14 +156,14 @@ const AddService = () => {
           control={control}
           name={`services.billingRate`}
           render={({ field }) => (
-            <FormItem className='flex flex-col gap-4 mb-6'>
-              <FormLabel>Billing Rate</FormLabel>
+            <FormItem className="flex flex-col gap-4 mb-6">
+              <FormLabel>Billing Rate (DA/Hr)</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  type='number'
-                  step='0.01'
-                  placeholder='Enter billing rate'
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter billing rate"
                 />
               </FormControl>
               <FormMessage />
@@ -174,13 +174,13 @@ const AddService = () => {
           control={control}
           name={`services.experience`}
           render={({ field }) => (
-            <FormItem className='flex flex-col gap-4 mb-6'>
-              <FormLabel>Experience</FormLabel>
+            <FormItem className="flex flex-col gap-4 mb-6">
+              <FormLabel>Experience (Months)</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  type='number'
-                  placeholder='Enter experience'
+                  type="number"
+                  placeholder="Enter experience"
                 />
               </FormControl>
               <FormMessage />
@@ -191,13 +191,13 @@ const AddService = () => {
           control={control}
           name={`services.description`}
           render={({ field }) => (
-            <FormItem className='flex flex-col gap-4 mb-6'>
+            <FormItem className="flex flex-col gap-4 mb-6">
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <textarea
                   {...field}
-                  placeholder='Enter description'
-                  className='h-32 resize-y w-full border rounded-md p-2'
+                  placeholder="Enter description"
+                  className="h-32 resize-y w-full border rounded-md p-2"
                 />
               </FormControl>
               <FormMessage />
@@ -206,18 +206,18 @@ const AddService = () => {
         />
 
         {/* New Image Upload Field */}
-        <FormItem className='flex flex-col gap-4 mb-6'>
+        <FormItem className="flex flex-col gap-4 mb-6">
           <FormLabel>Service Image</FormLabel>
           <FileUpload onFileChange={setServiceImage} />
           {serviceImage && (
-            <p className='text-sm text-gray-500'>
+            <p className="text-sm text-gray-500">
               Selected file: {serviceImage.name}
             </p>
           )}
         </FormItem>
       </div>
 
-      <Button type='submit' className='mt-4' disabled={isLoading}>
+      <Button type="submit" className="mt-4" disabled={isLoading}>
         {isLoading ? "Submitting..." : "Submit"}
       </Button>
     </form>

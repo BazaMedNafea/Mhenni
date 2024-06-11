@@ -91,7 +91,7 @@ const ServiceProviderPage = () => {
           <h1 className="text-4xl font-bold mb-2">
             {currentProvider?.user.firstName} {currentProvider?.user.lastName}
           </h1>
-          <p className="text-gray-700 mb-4">{currentProvider?.description}</p>
+          <p className="text-gray-700 mb-4">{currentProvider?.user.bio}</p>
           <div className="flex items-center">
             <h2 className="text-2xl font-semibold mr-2">Rating:</h2>
             <StarRatings
